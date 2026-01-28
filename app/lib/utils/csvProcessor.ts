@@ -145,7 +145,7 @@ export const parseCSVFile = (
           reject(error);
         }
       },
-      error: (error) => {
+      error: (error: Error) => {
         reject(error);
       },
     });
@@ -182,7 +182,7 @@ export const parseCSVText = (
           reject(error);
         }
       },
-      error: (error) => {
+      error: (error: Error) => {
         reject(error);
       },
     });
