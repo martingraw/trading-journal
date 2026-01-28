@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTradeContext } from '@/app/context/TradeContext';
 
 interface SidebarProps {
   onSettingsClick: () => void;
@@ -9,6 +10,7 @@ interface SidebarProps {
 
 export default function Sidebar({ onSettingsClick }: SidebarProps) {
   const pathname = usePathname();
+  const { theme } = useTradeContext();
 
   const menuItems = [
     { id: 'dashboard', href: '/', icon: 'fa-chart-line', label: 'Dashboard' },
@@ -54,7 +56,7 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
         }}
       >
         <img
-          src="/logo.png"
+          src={theme === 'light' ? '/logo-dk.png' : '/logo.png'}
           alt="TradeLog"
           style={{
             width: '100%',
@@ -157,20 +159,7 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
             e.currentTarget.style.color = 'var(--text-secondary)';
           }}
         >
-          <svg 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            style={{ flexShrink: 0 }}
-          >
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"></path>
-          </svg>
+          <i className="fas fa-cog" style={{ width: '20px', textAlign: 'center' }} />
           <span>Settings</span>
         </button>
       </div>

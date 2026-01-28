@@ -187,11 +187,11 @@ export default function SettingsModal({
                 style={{
                   padding: 'var(--space-3) var(--space-6)',
                   background: apiKey && binId ? 'var(--accent-green)' : 'var(--bg-elevated)',
-                  color: apiKey && binId ? 'white' : 'var(--text-muted)',
+                  color: apiKey && binId ? '#000000' : 'var(--text-muted)',
                   border: 'none',
                   borderRadius: 'var(--radius-base)',
                   fontSize: 'var(--text-base)',
-                  fontWeight: 'var(--font-semibold)',
+                  fontWeight: 'var(--font-bold)',
                   cursor: apiKey && binId ? 'pointer' : 'not-allowed',
                   transition: 'all var(--transition-fast)',
                   opacity: isSaving ? 0.6 : 1,

@@ -278,13 +278,42 @@ export function TradeProvider({ children }: { children: React.ReactNode }) {
 
   // JSONBin config
   const setJsonBinConfig = async (config: JSONBinConfig): Promise<void> => {
+    // Update the config first
     setJsonBinConfigState(config);
 
+    // Wait for state to update before attempting connection
     if (config.apiKey && config.binId) {
-      // Try to load from cloud
-      const success = await loadFromCloud();
-      if (success) {
+      // Small delay to ensure state is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Try to load from cloud with the new config
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${API.JSONBIN_BASE}/${config.binId}/latest`, {
+          headers: {
+            'X-Master-Key': config.apiKey,
+          },
+        });
+
+        if (!response.ok) throw new Error('Failed to load');
+
+        const data = await response.json();
+
+        if (data.record && data.record.trades) {
+          const sortedTrades = data.record.trades.sort(
+            (a: Trade, b: Trade) => new Date(b.exitTime).getTime() - new Date(a.exitTime).getTime()
+          );
+          setTradesState(sortedTrades);
+        } else {
+          setTradesState([]);
+        }
+
+        setIsLoading(false);
         showToast('Connected to cloud storage', 'success');
+      } catch (error) {
+        console.error('Error loading from JSONBin:', error);
+        showToast('Could not connect to cloud storage', 'error');
+        setIsLoading(false);
       }
     }
   };
