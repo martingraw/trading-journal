@@ -1,0 +1,3488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeLog | Trading Journal</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #0f1117;
+      --bg-secondary: #1a1d2e;
+      --bg-tertiary: #22263a;
+      --bg-card: #1e2130;
+      --border: #2d3142;
+      --text-primary: #f0f4ff;
+      --text-secondary: #8b9dc3;
+      --text-muted: #5a6b8f;
+      --accent-green: #00ffa3;
+      --accent-green-dim: rgba(0, 255, 163, 0.12);
+      --accent-red: #ff4757;
+      --accent-red-dim: rgba(255, 71, 87, 0.12);
+      --accent-blue: #3b82f6;
+      --accent-purple: #a855f7;
+      --accent-yellow: #fbbf24;
+      --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-success: linear-gradient(135deg, #00ffa3 0%, #00d4aa 100%);
+      --gradient-danger: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.3);
+      --glow-green: 0 0 20px rgba(0, 255, 163, 0.3);
+      --glow-red: 0 0 20px rgba(255, 71, 87, 0.3);
+      --glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-green-dim: rgba(16, 185, 129, 0.1);
+      --accent-red: #ef4444;
+      --accent-red-dim: rgba(239, 68, 68, 0.1);
+      --accent-blue: #3b82f6;
+      --accent-purple: #a855f7;
+      --accent-yellow: #f59e0b;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+      --glow-green: 0 0 20px rgba(16, 185, 129, 0.2);
+      --glow-red: 0 0 20px rgba(239, 68, 68, 0.2);
+      --glow-blue: 0 0 20px rgba(59, 130, 246, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+      border-radius: 10px;
+      border: 2px solid var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--accent-purple), var(--accent-blue));
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+    }
+
+    .animate-fade {
+      animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.2s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    .stagger-4 { animation-delay: 0.4s; }
+
+    .glass-card {
+      background: rgba(20, 29, 58, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-lg);
+    }
+
+    [data-theme="light"] .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .dashboard-grid > div[style*="span 2"] {
+        grid-column: span 2 !important;
+      }
+      .dashboard-grid > div[style*="span 3"] {
+        grid-column: span 2 !important;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none !important;
+      }
+
+      .main-content {
+        margin-left: 0 !important;
+        padding: 16px !important;
+      }
+
+      header {
+        margin-left: 0 !important;
+      }
+
+      footer {
+        margin-left: 0 !important;
+      }
+
+      .header-stats {
+        display: none !important;
+      }
+      
+      .header-container {
+        padding: 16px !important;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .dashboard-grid > div[style*="span 2"],
+      .dashboard-grid > div[style*="span 3"] {
+        grid-column: span 1 !important;
+      }
+
+      .trade-row-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+
+      .trade-headers {
+        display: none !important;
+      }
+
+      .filter-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+
+      .filter-bar > * {
+        width: 100% !important;
+      }
+
+      .footer-content {
+        flex-direction: column !important;
+        gap: 16px !important;
+        text-align: center !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .calendar-grid {
+        gap: 2px !important;
+      }
+
+      .calendar-day {
+        min-height: 36px !important;
+        font-size: 11px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // ============ CONSTANTS ============
+    const PRESET_TAGS = [
+      { label: 'Breakout', color: '#4488ff' },
+      { label: 'Reversal', color: '#8855ff' },
+      { label: 'Trend', color: '#00d4aa' },
+      { label: 'Scalp', color: '#ffcc00' },
+      { label: 'Swing', color: '#ff8844' },
+      { label: 'First Candle Rule', color: '#00d4aa' },
+      { label: 'FOMO', color: '#ff4466' },
+      { label: 'Revenge', color: '#ff4466' },
+      { label: 'A+ Setup', color: '#00d4aa' },
+      { label: 'Overtraded', color: '#ff4466' },
+      { label: 'News', color: '#8855ff' }
+    ];
+
+    // ============ UTILITY FUNCTIONS ============
+    const formatCurrency = (value, decimals = 2) => {
+      const num = parseFloat(value) || 0;
+      const sign = num >= 0 ? '+' : '';
+      return `${sign}$${num.toFixed(decimals)}`;
+    };
+
+    const formatDate = (dateStr) => {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    const formatTime = (dateStr) => {
+      const date = new Date(dateStr);
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const getTickValue = (symbol) => {
+      // Micro E-mini S&P 500
+      if (symbol.includes('MES')) return 5; // $5 per point
+      // E-mini S&P 500
+      if (symbol.includes('ES') && !symbol.includes('MES')) return 50; // $50 per point
+      // Micro E-mini Nasdaq
+      if (symbol.includes('MNQ')) return 2; // $2 per point
+      // E-mini Nasdaq
+      if (symbol.includes('NQ') && !symbol.includes('MNQ')) return 20; // $20 per point
+      // Micro Gold
+      if (symbol.includes('MGC')) return 10; // $10 per point ($1 per tick, 10 ticks per point)
+      // Gold Futures
+      if (symbol.includes('GC') && !symbol.includes('MGC')) return 100; // $100 per point
+      // Micro Crude Oil
+      if (symbol.includes('MCL')) return 10; // $10 per point
+      // Crude Oil
+      if (symbol.includes('CL') && !symbol.includes('MCL')) return 1000; // $1000 per point
+      // Micro E-mini Russell
+      if (symbol.includes('M2K')) return 5; // $5 per point
+      // E-mini Russell
+      if (symbol.includes('RTY')) return 50; // $50 per point
+      // Micro E-mini Dow
+      if (symbol.includes('MYM')) return 0.5; // $0.50 per point
+      // E-mini Dow
+      if (symbol.includes('YM') && !symbol.includes('MYM')) return 5; // $5 per point
+      return 5; // Default to MES
+    };
+
+    // ============ DATA PROCESSING ============
+    const processCSV = (csvData, existingTrades = []) => {
+      // Filter for filled orders only (Market and Limit types that actually executed)
+      const rows = csvData.filter(row => {
+        const status = row.Status;
+        const type = row.Type;
+        const fillQty = parseInt(row['Fill Qty']) || 0;
+        
+        // Include Market, Limit, Stop Loss, Take Profit, and Stop orders that were filled
+        return status === 'Filled' && 
+               (type === 'Market' || type === 'Limit' || type === 'Stop Loss' || type === 'Take Profit' || type === 'Stop') &&
+               fillQty > 0;
+      });
+
+      // Sort by Status Time chronologically
+      rows.sort((a, b) => new Date(a['Status Time']) - new Date(b['Status Time']));
+
+      console.log('Processing filled orders:', rows.map(r => ({
+        side: r.Side,
+        type: r.Type,
+        price: r['Avg Fill Price'],
+        time: r['Status Time']
+      })));
+
+      const trades = [];
+      const openPositions = {};
+
+      rows.forEach(row => {
+        const symbol = row.Symbol;
+        const side = row.Side;
+        const qty = parseInt(row['Fill Qty']) || parseInt(row.Qty) || 1;
+        const price = parseFloat(row['Avg Fill Price']);
+        const time = row['Status Time'];
+
+        if (!openPositions[symbol]) {
+          openPositions[symbol] = [];
+        }
+
+        if (side === 'Buy') {
+          // Opening a long position
+          openPositions[symbol].push({ type: 'long', price, qty, time });
+        } else if (side === 'Sell') {
+          // Check if we have an open long position to close
+          if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'long') {
+            const entry = openPositions[symbol].shift();
+            const tickValue = getTickValue(symbol);
+            const pnl = (price - entry.price) * tickValue * qty;
+            
+            trades.push({
+              id: `${entry.time}-${time}`,
+              symbol,
+              direction: 'Long',
+              entryPrice: entry.price,
+              exitPrice: price,
+              entryTime: entry.time,
+              exitTime: time,
+              qty,
+              pnl,
+              pnlTicks: (price - entry.price) * 4, // Convert to ticks
+              notes: '',
+              tags: []
+            });
+          } else {
+            // Opening a short position
+            openPositions[symbol].push({ type: 'short', price, qty, time });
+          }
+        }
+      });
+
+      console.log('Trades found:', trades);
+
+      // Merge with existing trades (avoid duplicates by ID)
+      const existingIds = new Set(existingTrades.map(t => t.id));
+      const newTrades = trades.filter(t => !existingIds.has(t.id));
+      
+      // Also preserve notes from existing trades
+      const existingTradesMap = {};
+      existingTrades.forEach(t => { existingTradesMap[t.id] = t; });
+      
+      const mergedNewTrades = newTrades.map(t => ({
+        ...t,
+        notes: existingTradesMap[t.id]?.notes || ''
+      }));
+      
+      return [...existingTrades, ...mergedNewTrades].sort((a, b) => 
+        new Date(b.exitTime) - new Date(a.exitTime)
+      );
+    };
+
+    // ============ COMPONENTS ============
+    
+    // Sidebar Component
+    const Sidebar = ({ activeTab, onTabChange, onSettingsClick }) => {
+      const menuItems = [
+        { id: 'dashboard', icon: 'fa-chart-line', label: 'Dashboard' },
+        { id: 'trades', icon: 'fa-list', label: 'Trade Log' },
+        { id: 'upload', icon: 'fa-upload', label: 'Import Trades' },
+      ];
+
+      return (
+        <div 
+          className="sidebar"
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: '260px',
+            background: '#1a1d2e',
+            display: 'flex',
+            flexDirection: 'column',
+            zIndex: 200,
+            borderRight: '1px solid #2d3142'
+          }}
+        >
+          {/* Logo */}
+          <div 
+            onClick={() => onTabChange('dashboard')}
+            style={{ 
+              padding: '24px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              borderBottom: '1px solid #2d3142'
+            }}
+          >
+            <img 
+              src="logo.jpg" 
+              alt="TradeLog" 
+              style={{ 
+                width: '100%',
+                maxWidth: '180px',
+                height: 'auto',
+                borderRadius: '8px'
+              }} 
+            />
+          </div>
+
+          {/* Add Trade Button */}
+          <div style={{ padding: '20px 16px' }}>
+            <button
+              onClick={() => onTabChange('upload')}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                background: 'linear-gradient(135deg, #4f7cff 0%, #3b5fd6 100%)',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 12px rgba(79, 124, 255, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(79, 124, 255, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(79, 124, 255, 0.3)';
+              }}
+            >
+              <i className="fas fa-plus" style={{ fontSize: '14px' }}></i>
+              <span>Add Trade</span>
+            </button>
+          </div>
+
+          {/* Menu Items */}
+          <div style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {menuItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => onTabChange(item.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 16px',
+                  background: activeTab === item.id ? 'rgba(79, 124, 255, 0.1)' : 'transparent',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  width: '100%',
+                  position: 'relative'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== item.id) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== item.id) {
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
+              >
+                {activeTab === item.id && (
+                  <div style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '3px',
+                    height: '20px',
+                    background: '#4f7cff',
+                    borderRadius: '0 3px 3px 0'
+                  }} />
+                )}
+                <i 
+                  className={`fas ${item.icon}`}
+                  style={{ 
+                    fontSize: '16px',
+                    width: '20px',
+                    textAlign: 'center',
+                    color: activeTab === item.id ? '#4f7cff' : 'rgba(255, 255, 255, 0.5)'
+                  }}
+                />
+                <span style={{
+                  fontSize: '14px',
+                  fontWeight: activeTab === item.id ? '600' : '500',
+                  color: activeTab === item.id ? '#fff' : 'rgba(255, 255, 255, 0.7)',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Settings at bottom */}
+          <div style={{ padding: '16px', borderTop: '1px solid #2d3142' }}>
+            <button
+              onClick={onSettingsClick}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                background: 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <i 
+                className="fas fa-cog"
+                style={{ 
+                  fontSize: '16px',
+                  width: '20px',
+                  textAlign: 'center',
+                  color: 'rgba(255, 255, 255, 0.5)'
+                }}
+              />
+              <span style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: 'rgba(255, 255, 255, 0.7)',
+                whiteSpace: 'nowrap'
+              }}>
+                Settings
+              </span>
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    // Header Component
+    const Header = ({ totalPnL, winRate, totalTrades, isConnected, streak, streakType }) => (
+      <header style={{
+        background: 'var(--bg-secondary)',
+        borderBottom: '1px solid var(--border)',
+        padding: '16px 32px',
+        marginLeft: '260px'
+      }}>
+        <div className="header-container" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <div className="header-stats" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+            {streak > 1 && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                padding: '8px 16px',
+                background: streakType === 'win' ? 'var(--accent-green-dim)' : 'var(--accent-red-dim)',
+                borderRadius: '20px'
+              }}>
+                <span style={{ fontSize: '16px' }}>{streakType === 'win' ? '🔥' : '❄️'}</span>
+                <span style={{ 
+                  fontSize: '14px', 
+                  fontWeight: '600',
+                  color: streakType === 'win' ? 'var(--accent-green)' : 'var(--accent-red)'
+                }}>
+                  {streak} day {streakType === 'win' ? 'streak' : 'losing streak'}
+                </span>
+              </div>
+            )}
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Total P&L</p>
+              <p className="mono" style={{ 
+                fontSize: '20px', 
+                fontWeight: '600',
+                color: totalPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'
+              }}>
+                {formatCurrency(totalPnL)}
+              </p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Win Rate</p>
+              <p className="mono" style={{ fontSize: '20px', fontWeight: '600' }}>{winRate.toFixed(1)}%</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Trades</p>
+              <p className="mono" style={{ fontSize: '20px', fontWeight: '600' }}>{totalTrades}</p>
+            </div>
+            {isConnected && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '6px',
+                padding: '6px 12px',
+                background: 'var(--accent-green-dim)',
+                borderRadius: '6px'
+              }}>
+                <span style={{ 
+                  width: '8px', 
+                  height: '8px', 
+                  borderRadius: '50%', 
+                  background: 'var(--accent-green)',
+                  animation: 'pulse 2s infinite'
+                }} />
+                <span style={{ fontSize: '12px', color: 'var(--accent-green)' }}>Synced</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+
+    // Stats Card Component
+    const StatCard = ({ label, value, subValue, color, tooltip }) => {
+      const [showTooltip, setShowTooltip] = useState(false);
+      
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '20px',
+          position: 'relative'
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '-20px',
+            right: '-20px',
+            width: '80px',
+            height: '80px',
+            background: color ? `${color}15` : 'var(--accent-blue)',
+            borderRadius: '50%',
+            opacity: 0.5,
+            pointerEvents: 'none'
+          }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              {label}
+            </p>
+            {tooltip && (
+              <div 
+                style={{ position: 'relative', zIndex: showTooltip ? 1000 : 1 }}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <span style={{ 
+                  cursor: 'help',
+                  fontSize: '12px',
+                  color: 'var(--text-secondary)',
+                  opacity: 0.7
+                }}>
+                  ⓘ
+                </span>
+                {showTooltip && (
+                  <div style={{
+                    position: 'fixed',
+                    transform: 'translateX(-50%)',
+                    marginTop: '8px',
+                    padding: '12px 16px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: 'var(--text-primary)',
+                    width: '220px',
+                    lineHeight: '1.5',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                    zIndex: 1001
+                  }}>
+                    {tooltip}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <p className="mono" style={{ fontSize: '24px', fontWeight: '600', color: color || 'var(--text-primary)', position: 'relative', zIndex: 1 }}>
+            {value}
+          </p>
+          {subValue && (
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '6px', lineHeight: '1.4', position: 'relative', zIndex: 1 }}>{subValue}</p>
+          )}
+        </div>
+      );
+    };
+
+    // Tag Performance Analysis Component
+    const TagPerformance = ({ trades, filters, onFilterChange }) => {
+      const [selectedTag, setSelectedTag] = useState(null);
+      
+      // Get all tags that have been used
+      const tagStats = useMemo(() => {
+        const stats = {};
+        
+        PRESET_TAGS.forEach(tag => {
+          const taggedTrades = trades.filter(t => t.tags && t.tags.includes(tag.label));
+          if (taggedTrades.length === 0) return;
+          
+          const wins = taggedTrades.filter(t => t.pnl > 0);
+          const losses = taggedTrades.filter(t => t.pnl < 0);
+          const totalPnL = taggedTrades.reduce((sum, t) => sum + t.pnl, 0);
+          const winRate = (wins.length / taggedTrades.length) * 100;
+          const avgWin = wins.length > 0 ? wins.reduce((sum, t) => sum + t.pnl, 0) / wins.length : 0;
+          const avgLoss = losses.length > 0 ? Math.abs(losses.reduce((sum, t) => sum + t.pnl, 0) / losses.length) : 0;
+          const profitFactor = avgLoss > 0 ? (wins.reduce((sum, t) => sum + t.pnl, 0) / Math.abs(losses.reduce((sum, t) => sum + t.pnl, 0))) : Infinity;
+          
+          stats[tag.label] = {
+            color: tag.color,
+            trades: taggedTrades.length,
+            wins: wins.length,
+            losses: losses.length,
+            totalPnL,
+            winRate,
+            avgWin,
+            avgLoss,
+            profitFactor
+          };
+        });
+        
+        return stats;
+      }, [trades]);
+
+      const sortedTags = Object.entries(tagStats).sort((a, b) => b[1].trades - a[1].trades);
+
+      if (sortedTags.length === 0) {
+        return (
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+            padding: '20px',
+            height: '100%'
+          }}>
+            <h3 style={{ 
+              fontSize: '12px', 
+              fontWeight: '600', 
+              color: 'var(--text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              marginBottom: '16px'
+            }}>
+              Tag Performance
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>
+              Start tagging your trades to see performance by setup type
+            </p>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '20px',
+          height: '100%'
+        }}>
+          <h3 style={{ 
+            fontSize: '12px', 
+            fontWeight: '600', 
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '16px'
+          }}>
+            Performance by Tag
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {sortedTags.map(([tag, data]) => (
+              <div 
+                key={tag}
+                onClick={() => onFilterChange({ ...filters, tag: filters.tag === tag ? '' : tag })}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '120px 60px 70px 80px 80px',
+                  gap: '12px',
+                  padding: '12px 16px',
+                  background: filters.tag === tag ? `${data.color}20` : 'var(--bg-tertiary)',
+                  borderRadius: '8px',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  border: filters.tag === tag ? `1px solid ${data.color}` : '1px solid transparent',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: data.color
+                  }} />
+                  <span style={{ fontSize: '13px', fontWeight: '500' }}>{tag}</span>
+                </div>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  {data.trades} trades
+                </span>
+                <span className="mono" style={{ 
+                  fontSize: '13px', 
+                  fontWeight: '600',
+                  color: data.winRate >= 50 ? 'var(--accent-green)' : 'var(--accent-red)'
+                }}>
+                  {data.winRate.toFixed(0)}% WR
+                </span>
+                <span className="mono" style={{ 
+                  fontSize: '13px', 
+                  fontWeight: '600',
+                  color: data.totalPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'
+                }}>
+                  {formatCurrency(data.totalPnL)}
+                </span>
+                <span className="mono" style={{ 
+                  fontSize: '12px', 
+                  color: 'var(--text-secondary)'
+                }}>
+                  PF: {data.profitFactor === Infinity ? '∞' : data.profitFactor.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '12px' }}>
+            Click a tag to filter trades by that setup
+          </p>
+        </div>
+      );
+    };
+
+    // Time of Day Analysis Component
+    const TimeAnalysis = ({ morningWinRate, afternoonWinRate, morningTrades, afternoonTrades }) => {
+      const morningLossRate = morningTrades > 0 ? 100 - morningWinRate : 0;
+      const afternoonLossRate = afternoonTrades > 0 ? 100 - afternoonWinRate : 0;
+      
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '20px',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <h3 style={{ 
+            fontSize: '12px', 
+            fontWeight: '600', 
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '16px'
+          }}>
+            Win Rate by Time of Day
+          </h3>
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{ 
+              flex: 1, 
+              padding: '16px', 
+              background: 'var(--bg-tertiary)', 
+              borderRadius: '8px'
+            }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: '500' }}>
+                ☀️ Morning Trades <span style={{ opacity: 0.7 }}>(Before 12pm)</span>
+              </p>
+              {morningTrades === 0 ? (
+                <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>No trades yet</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--accent-green)' }}>Win Rate</span>
+                    <span className="mono" style={{ fontSize: '18px', fontWeight: '600', color: 'var(--accent-green)' }}>
+                      {morningWinRate.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--accent-red)' }}>Loss Rate</span>
+                    <span className="mono" style={{ fontSize: '18px', fontWeight: '600', color: 'var(--accent-red)' }}>
+                      {morningLossRate.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div style={{ 
+                    marginTop: '8px', 
+                    paddingTop: '8px', 
+                    borderTop: '1px solid var(--border)',
+                    fontSize: '12px',
+                    color: 'var(--text-secondary)'
+                  }}>
+                    {morningTrades} total trade{morningTrades !== 1 ? 's' : ''}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div style={{ 
+              flex: 1, 
+              padding: '16px', 
+              background: 'var(--bg-tertiary)', 
+              borderRadius: '8px'
+            }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: '500' }}>
+                🌙 Afternoon Trades <span style={{ opacity: 0.7 }}>(12pm+)</span>
+              </p>
+              {afternoonTrades === 0 ? (
+                <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>No trades yet</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--accent-green)' }}>Win Rate</span>
+                    <span className="mono" style={{ fontSize: '18px', fontWeight: '600', color: 'var(--accent-green)' }}>
+                      {afternoonWinRate.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--accent-red)' }}>Loss Rate</span>
+                    <span className="mono" style={{ fontSize: '18px', fontWeight: '600', color: 'var(--accent-red)' }}>
+                      {afternoonLossRate.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div style={{ 
+                    marginTop: '8px', 
+                    paddingTop: '8px', 
+                    borderTop: '1px solid var(--border)',
+                    fontSize: '12px',
+                    color: 'var(--text-secondary)'
+                  }}>
+                    {afternoonTrades} total trade{afternoonTrades !== 1 ? 's' : ''}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Best/Worst Day Component
+    const BestWorstDay = ({ bestDay, worstDay }) => (
+      <div style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: '12px',
+        padding: '20px',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <h3 style={{ 
+          fontSize: '12px', 
+          fontWeight: '600', 
+          color: 'var(--text-secondary)',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          marginBottom: '16px'
+        }}>
+          Best & Worst Days
+        </h3>
+        <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
+          <div style={{ 
+            flex: 1, 
+            padding: '16px', 
+            background: 'var(--accent-green-dim)', 
+            borderRadius: '8px',
+            borderLeft: '3px solid var(--accent-green)'
+          }}>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+              🏆 Best Day
+            </p>
+            {bestDay ? (
+              <>
+                <p className="mono" style={{ fontSize: '20px', fontWeight: '600', color: 'var(--accent-green)' }}>
+                  {formatCurrency(bestDay.pnl)}
+                </p>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  {formatDate(bestDay.date)}
+                </p>
+              </>
+            ) : (
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>No data yet</p>
+            )}
+          </div>
+          <div style={{ 
+            flex: 1, 
+            padding: '16px', 
+            background: 'var(--accent-red-dim)', 
+            borderRadius: '8px',
+            borderLeft: '3px solid var(--accent-red)'
+          }}>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+              📉 Worst Day
+            </p>
+            {worstDay ? (
+              <>
+                <p className="mono" style={{ fontSize: '20px', fontWeight: '600', color: 'var(--accent-red)' }}>
+                  {formatCurrency(worstDay.pnl)}
+                </p>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                  {formatDate(worstDay.date)}
+                </p>
+              </>
+            ) : (
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>No data yet</p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+
+    // Calendar Component
+    const Calendar = ({ trades, onDayClick, selectedDate, dailyNotes, onUpdateDailyNote }) => {
+      const [currentMonth, setCurrentMonth] = useState(new Date());
+      const [editingNote, setEditingNote] = useState(null);
+      const [noteText, setNoteText] = useState('');
+      
+      const tradesByDay = useMemo(() => {
+        const map = {};
+        trades.forEach(trade => {
+          const day = trade.exitTime.split(' ')[0];
+          if (!map[day]) map[day] = { pnl: 0, trades: 0, wins: 0 };
+          map[day].pnl += trade.pnl;
+          map[day].trades += 1;
+          if (trade.pnl > 0) map[day].wins += 1;
+        });
+        return map;
+      }, [trades]);
+
+      const getDaysInMonth = (date) => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const days = [];
+        
+        // Add empty slots for days before first day of month
+        for (let i = 0; i < firstDay.getDay(); i++) {
+          days.push(null);
+        }
+        
+        // Add all days of month
+        for (let i = 1; i <= lastDay.getDate(); i++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+          days.push({ day: i, date: dateStr, data: tradesByDay[dateStr], hasNote: !!dailyNotes[dateStr] });
+        }
+        
+        return days;
+      };
+
+      const handleNoteClick = (e, date) => {
+        e.stopPropagation();
+        setEditingNote(date);
+        setNoteText(dailyNotes[date] || '');
+      };
+
+      const saveNote = () => {
+        if (editingNote) {
+          onUpdateDailyNote(editingNote, noteText);
+          setEditingNote(null);
+          setNoteText('');
+        }
+      };
+
+      const days = getDaysInMonth(currentMonth);
+      const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '20px',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
+              style={{
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              ←
+            </button>
+            <h3 style={{ fontSize: '16px', fontWeight: '600' }}>{monthName}</h3>
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
+              style={{
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              →
+            </button>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-secondary)', padding: '8px 0' }}>
+                {day}
+              </div>
+            ))}
+          </div>
+          
+          <div className="calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+            {days.map((dayInfo, idx) => (
+              <div
+                key={idx}
+                onClick={() => {
+                  if (dayInfo) {
+                    if (dayInfo.data) {
+                      // Day with trades - go to trades view
+                      onDayClick(dayInfo.date);
+                    } else {
+                      // No trades - open note modal
+                      handleNoteClick({ stopPropagation: () => {} }, dayInfo.date);
+                    }
+                  }
+                }}
+                className="calendar-day"
+                style={{
+                  minHeight: '75px',
+                  padding: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  borderRadius: '10px',
+                  cursor: dayInfo ? 'pointer' : 'default',
+                  background: dayInfo?.data 
+                    ? dayInfo.data.pnl >= 0 
+                      ? 'var(--accent-green-dim)' 
+                      : 'var(--accent-red-dim)'
+                    : 'var(--bg-tertiary)',
+                  border: selectedDate === dayInfo?.date ? '2px solid var(--accent-blue)' : '1px solid var(--border)',
+                  transition: 'all 0.2s ease',
+                  position: 'relative'
+                }}
+              >
+                {dayInfo && (
+                  <>
+                    {/* Pencil icon for trading days */}
+                    {dayInfo.data && (
+                      <span 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNoteClick(e, dayInfo.date);
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '6px',
+                          left: '6px',
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '4px',
+                          background: dayInfo.hasNote ? 'var(--accent-yellow)' : 'rgba(255,255,255,0.1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = dayInfo.hasNote ? 'var(--accent-yellow)' : 'rgba(255,255,255,0.25)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = dayInfo.hasNote ? 'var(--accent-yellow)' : 'rgba(255,255,255,0.1)'}
+                        title="Add/Edit Daily Note"
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={dayInfo.hasNote ? '#000' : '#fff'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                        </svg>
+                      </span>
+                    )}
+                    {/* Note indicator for non-trading days */}
+                    {!dayInfo.data && dayInfo.hasNote && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '6px',
+                        left: '6px',
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: 'var(--accent-yellow)'
+                      }} />
+                    )}
+                    {/* Day number - top right */}
+                    <span style={{ 
+                      fontSize: '13px', 
+                      fontWeight: '500',
+                      color: dayInfo.data ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      marginBottom: 'auto'
+                    }}>
+                      {dayInfo.day}
+                    </span>
+                    {/* P&L and trade count - bottom */}
+                    {dayInfo.data && (
+                      <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'flex-end',
+                        gap: '2px'
+                      }}>
+                        <span className="mono" style={{ 
+                          fontSize: '14px', 
+                          color: dayInfo.data.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
+                          fontWeight: '700'
+                        }}>
+                          {dayInfo.data.pnl >= 0 ? '+$' : '-$'}{Math.abs(dayInfo.data.pnl).toFixed(0)}
+                        </span>
+                        <span style={{ 
+                          fontSize: '10px', 
+                          color: 'var(--text-secondary)'
+                        }}>
+                          {dayInfo.data.trades} trade{dayInfo.data.trades !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Daily Note Modal */}
+          {editingNote && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000
+            }} onClick={() => setEditingNote(null)}>
+              <div style={{
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '24px',
+                maxWidth: '500px',
+                width: '90%'
+              }} onClick={e => e.stopPropagation()}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+                  📝 Daily Journal
+                </h3>
+                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+                  {formatDate(editingNote)}
+                </p>
+                <textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="How was your trading today? What did you learn? How was your mindset?"
+                  style={{
+                    width: '100%',
+                    minHeight: '150px',
+                    padding: '12px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical'
+                  }}
+                />
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
+                  <button
+                    onClick={() => setEditingNote(null)}
+                    style={{
+                      padding: '10px 20px',
+                      background: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveNote}
+                    style={{
+                      padding: '10px 20px',
+                      background: 'var(--accent-blue)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontWeight: '500',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Trade Filters Component
+    const TradeFilters = ({ trades, filters, onFilterChange }) => {
+      // Get unique values for dropdowns
+      const symbols = [...new Set(trades.map(t => t.symbol.split('.').pop().replace(/[A-Z]\d+$/, '')))];
+      const directions = ['Long', 'Short'];
+      const outcomes = ['Winners', 'Losers'];
+      const usedTags = [...new Set(trades.flatMap(t => t.tags || []))];
+      
+      // Get date range
+      const dates = trades.map(t => new Date(t.exitTime));
+      const minDate = dates.length > 0 ? new Date(Math.min(...dates)).toISOString().split('T')[0] : '';
+      const maxDate = dates.length > 0 ? new Date(Math.max(...dates)).toISOString().split('T')[0] : '';
+
+      const selectStyle = {
+        padding: '8px 12px',
+        background: 'var(--bg-secondary)',
+        border: '1px solid var(--border)',
+        borderRadius: '6px',
+        color: 'var(--text-primary)',
+        fontSize: '13px',
+        cursor: 'pointer',
+        minWidth: '120px'
+      };
+
+      const inputStyle = {
+        padding: '8px 12px',
+        background: 'var(--bg-secondary)',
+        border: '1px solid var(--border)',
+        borderRadius: '6px',
+        color: 'var(--text-primary)',
+        fontSize: '13px',
+        width: '140px'
+      };
+
+      const hasActiveFilters = filters.symbol || filters.direction || filters.outcome || 
+                                filters.dateFrom || filters.dateTo || filters.minPnl || filters.maxPnl || filters.tag;
+
+      return (
+        <div className="filter-bar" style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          marginBottom: '16px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' }}>Filters:</span>
+            
+            {/* Date Range */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <input
+                type="date"
+                value={filters.dateFrom || ''}
+                onChange={(e) => onFilterChange({ ...filters, dateFrom: e.target.value })}
+                style={inputStyle}
+                placeholder="From"
+              />
+              <span style={{ color: 'var(--text-secondary)' }}>→</span>
+              <input
+                type="date"
+                value={filters.dateTo || ''}
+                onChange={(e) => onFilterChange({ ...filters, dateTo: e.target.value })}
+                style={inputStyle}
+                placeholder="To"
+              />
+            </div>
+
+            {/* Symbol Filter */}
+            <select
+              value={filters.symbol || ''}
+              onChange={(e) => onFilterChange({ ...filters, symbol: e.target.value })}
+              style={selectStyle}
+            >
+              <option value="">All Symbols</option>
+              {symbols.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+
+            {/* Direction Filter */}
+            <select
+              value={filters.direction || ''}
+              onChange={(e) => onFilterChange({ ...filters, direction: e.target.value })}
+              style={selectStyle}
+            >
+              <option value="">All Directions</option>
+              {directions.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+
+            {/* Outcome Filter */}
+            <select
+              value={filters.outcome || ''}
+              onChange={(e) => onFilterChange({ ...filters, outcome: e.target.value })}
+              style={selectStyle}
+            >
+              <option value="">All Outcomes</option>
+              {outcomes.map(o => (
+                <option key={o} value={o}>{o}</option>
+              ))}
+            </select>
+
+            {/* Tag Filter */}
+            {usedTags.length > 0 && (
+              <select
+                value={filters.tag || ''}
+                onChange={(e) => onFilterChange({ ...filters, tag: e.target.value })}
+                style={selectStyle}
+              >
+                <option value="">All Tags</option>
+                {usedTags.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            )}
+
+            {/* P&L Range */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <input
+                type="number"
+                value={filters.minPnl || ''}
+                onChange={(e) => onFilterChange({ ...filters, minPnl: e.target.value })}
+                style={{ ...inputStyle, width: '100px' }}
+                placeholder="Min P&L"
+              />
+              <span style={{ color: 'var(--text-secondary)' }}>→</span>
+              <input
+                type="number"
+                value={filters.maxPnl || ''}
+                onChange={(e) => onFilterChange({ ...filters, maxPnl: e.target.value })}
+                style={{ ...inputStyle, width: '100px' }}
+                placeholder="Max P&L"
+              />
+            </div>
+
+            {/* Clear Filters */}
+            {hasActiveFilters && (
+              <button
+                onClick={() => onFilterChange({})}
+                style={{
+                  padding: '8px 12px',
+                  background: 'var(--accent-red-dim)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: 'var(--accent-red)',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  marginLeft: 'auto'
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // Trade Row Component
+    const TradeRow = ({ trade, onUpdateNote, onUpdateTags, onDelete }) => {
+      const [isExpanded, setIsExpanded] = useState(false);
+      const [note, setNote] = useState(trade.notes || '');
+      const [tags, setTags] = useState(trade.tags || []);
+
+      const toggleTag = (tagLabel) => {
+        const newTags = tags.includes(tagLabel)
+          ? tags.filter(t => t !== tagLabel)
+          : [...tags, tagLabel];
+        setTags(newTags);
+        onUpdateTags(trade.id, newTags);
+      };
+
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          marginBottom: '8px',
+          overflow: 'hidden'
+        }}>
+          <div
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="trade-row-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '100px 100px 80px 120px 120px 80px 100px 1fr',
+              gap: '16px',
+              padding: '16px 20px',
+              cursor: 'pointer',
+              alignItems: 'center',
+              transition: 'background 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          >
+            <div className="mono" style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              {formatDate(trade.exitTime)}
+            </div>
+            <div>
+              <span style={{
+                display: 'inline-block',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: '600',
+                background: trade.direction === 'Long' ? 'var(--accent-green-dim)' : 'var(--accent-red-dim)',
+                color: trade.direction === 'Long' ? 'var(--accent-green)' : 'var(--accent-red)'
+              }}>
+                {trade.direction}
+              </span>
+            </div>
+            <div className="mono" style={{ fontSize: '13px' }}>{trade.symbol.split('.').pop().replace(/[A-Z]\d+$/, '')}</div>
+            <div>
+              <p className="mono" style={{ fontSize: '13px' }}>{trade.entryPrice.toFixed(2)}</p>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{formatTime(trade.entryTime)}</p>
+            </div>
+            <div>
+              <p className="mono" style={{ fontSize: '13px' }}>{trade.exitPrice.toFixed(2)}</p>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{formatTime(trade.exitTime)}</p>
+            </div>
+            <div className="mono" style={{ fontSize: '13px' }}>{trade.qty}</div>
+            <div className="mono" style={{ 
+              fontSize: '14px', 
+              fontWeight: '600',
+              color: trade.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'
+            }}>
+              {formatCurrency(trade.pnl)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              {tags.slice(0, 2).map(tag => {
+                const tagInfo = PRESET_TAGS.find(t => t.label === tag);
+                return (
+                  <span key={tag} style={{
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '10px',
+                    fontWeight: '500',
+                    background: `${tagInfo?.color || 'var(--accent-blue)'}20`,
+                    color: tagInfo?.color || 'var(--accent-blue)'
+                  }}>
+                    {tag}
+                  </span>
+                );
+              })}
+              {tags.length > 2 && (
+                <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>+{tags.length - 2}</span>
+              )}
+              {trade.notes && (
+                <span style={{ 
+                  width: '8px', 
+                  height: '8px', 
+                  borderRadius: '50%', 
+                  background: 'var(--accent-yellow)' 
+                }} />
+              )}
+              <span style={{ 
+                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease',
+                color: 'var(--text-secondary)'
+              }}>
+                ▼
+              </span>
+            </div>
+          </div>
+          
+          {isExpanded && (
+            <div style={{ 
+              padding: '0 20px 20px 20px',
+              borderTop: '1px solid var(--border)',
+              background: 'var(--bg-tertiary)'
+            }}>
+              <div style={{ paddingTop: '16px' }}>
+                {/* Tags Section */}
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '12px', 
+                  color: 'var(--text-secondary)', 
+                  marginBottom: '8px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}>
+                  Tags / Setup Type
+                </label>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                  {PRESET_TAGS.map(tag => (
+                    <button
+                      key={tag.label}
+                      onClick={() => toggleTag(tag.label)}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        border: tags.includes(tag.label) ? 'none' : '1px solid var(--border)',
+                        background: tags.includes(tag.label) ? `${tag.color}30` : 'var(--bg-secondary)',
+                        color: tags.includes(tag.label) ? tag.color : 'var(--text-secondary)',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {tags.includes(tag.label) ? '✓ ' : ''}{tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Notes Section */}
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '12px', 
+                  color: 'var(--text-secondary)', 
+                  marginBottom: '8px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}>
+                  Trade Notes
+                </label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  onBlur={() => onUpdateNote(trade.id, note)}
+                  placeholder="Add notes about this trade... What was your setup? How did you feel?"
+                  style={{
+                    width: '100%',
+                    minHeight: '80px',
+                    padding: '12px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical'
+                  }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <span className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      {formatDate(trade.exitTime)}
+                    </span>
+                    <span style={{ color: 'var(--text-muted)' }}>•</span>
+                    <span className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      {((new Date(trade.exitTime) - new Date(trade.entryTime)) / 60000).toFixed(1)} min
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => onDelete(trade.id)}
+                    style={{
+                      background: 'var(--accent-red-dim)',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '6px 12px',
+                      color: 'var(--accent-red)',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Delete Trade
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Win Rate Donut Chart Component
+    const WinRateChart = ({ wins, losses, winRate }) => {
+      const total = wins + losses;
+      const canvasRef = useRef(null);
+      const chartRef = useRef(null);
+
+      useEffect(() => {
+        if (!canvasRef.current) return;
+
+        if (chartRef.current) {
+          chartRef.current.destroy();
+        }
+
+        const ctx = canvasRef.current.getContext('2d');
+        
+        chartRef.current = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Wins', 'Losses'],
+            datasets: [{
+              data: total === 0 ? [0, 1] : [wins, losses],
+              backgroundColor: total === 0 
+                ? ['#2a2a3a', '#2a2a3a']
+                : ['#00d4aa', '#ff4466'],
+              borderWidth: 0,
+              cutout: '75%'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: total > 0 }
+            }
+          }
+        });
+
+        return () => {
+          if (chartRef.current) {
+            chartRef.current.destroy();
+          }
+        };
+      }, [wins, losses, total]);
+
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '20px',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <h3 style={{ 
+            fontSize: '12px', 
+            fontWeight: '600', 
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '16px'
+          }}>
+            Win Rate
+          </h3>
+          
+          <div style={{ 
+            flex: 1, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            position: 'relative',
+            minHeight: '220px'
+          }}>
+            <div style={{ position: 'relative', width: '200px', height: '200px' }}>
+              <canvas ref={canvasRef}></canvas>
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center'
+              }}>
+                <span className="mono" style={{ 
+                  fontSize: '42px', 
+                  fontWeight: '700',
+                  color: 'var(--text-primary)'
+                }}>
+                  {winRate.toFixed(0)}%
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-around', 
+            paddingTop: '16px',
+            borderTop: '1px solid var(--border)'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <p className="mono" style={{ fontSize: '20px', fontWeight: '600' }}>{total}</p>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Total</p>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <p className="mono" style={{ fontSize: '20px', fontWeight: '600', color: 'var(--accent-green)' }}>{wins}</p>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Wins</p>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <p className="mono" style={{ fontSize: '20px', fontWeight: '600', color: 'var(--accent-red)' }}>{losses}</p>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Losses</p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Chart Component
+    const PnLChart = ({ trades }) => {
+      const canvasRef = useRef(null);
+      const chartRef = useRef(null);
+
+      const cumulativePnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+
+      useEffect(() => {
+        if (!canvasRef.current || trades.length === 0) return;
+
+        const sortedTrades = [...trades].sort((a, b) => 
+          new Date(a.exitTime) - new Date(b.exitTime)
+        );
+
+        let cumulative = 0;
+        const data = sortedTrades.map(trade => {
+          cumulative += trade.pnl;
+          return {
+            x: new Date(trade.exitTime),
+            y: cumulative
+          };
+        });
+
+        if (chartRef.current) {
+          chartRef.current.destroy();
+        }
+
+        const ctx = canvasRef.current.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        const lastValue = data[data.length - 1]?.y || 0;
+        
+        if (lastValue >= 0) {
+          gradient.addColorStop(0, 'rgba(0, 212, 170, 0.3)');
+          gradient.addColorStop(1, 'rgba(0, 212, 170, 0)');
+        } else {
+          gradient.addColorStop(0, 'rgba(255, 68, 102, 0.3)');
+          gradient.addColorStop(1, 'rgba(255, 68, 102, 0)');
+        }
+
+        chartRef.current = new Chart(ctx, {
+          type: 'line',
+          data: {
+            datasets: [{
+              data: data,
+              borderColor: lastValue >= 0 ? '#00d4aa' : '#ff4466',
+              backgroundColor: gradient,
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              pointHoverBackgroundColor: lastValue >= 0 ? '#00d4aa' : '#ff4466'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1a1a25',
+                titleColor: '#f0f0f5',
+                bodyColor: '#f0f0f5',
+                borderColor: '#2a2a3a',
+                borderWidth: 1,
+                padding: 12,
+                displayColors: false,
+                callbacks: {
+                  title: (items) => {
+                    const date = new Date(items[0].raw.x);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                  },
+                  label: (item) => `P&L: ${formatCurrency(item.raw.y)}`
+                }
+              }
+            },
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'day',
+                  displayFormats: { day: 'MMM d' }
+                },
+                grid: { color: 'rgba(42, 42, 58, 0.5)' },
+                ticks: { color: '#8888a0' }
+              },
+              y: {
+                grid: { color: 'rgba(42, 42, 58, 0.5)' },
+                ticks: { 
+                  color: '#8888a0',
+                  callback: (value) => '$' + value
+                }
+              }
+            },
+            interaction: {
+              intersect: false,
+              mode: 'index'
+            }
+          }
+        });
+
+        return () => {
+          if (chartRef.current) {
+            chartRef.current.destroy();
+          }
+        };
+      }, [trades]);
+
+      return (
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          padding: '20px',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Cumulative P&L
+            </h3>
+            <span className="mono" style={{ 
+              fontSize: '20px', 
+              fontWeight: '700',
+              color: cumulativePnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'
+            }}>
+              {formatCurrency(cumulativePnL)}
+            </span>
+          </div>
+          <div style={{ flex: 1, minHeight: '200px' }}>
+            <canvas ref={canvasRef}></canvas>
+          </div>
+        </div>
+      );
+    };
+
+    // Toast Notification Component
+    const Toast = ({ message, type, onClose }) => {
+      useEffect(() => {
+        const timer = setTimeout(onClose, 4000);
+        return () => clearTimeout(timer);
+      }, [onClose]);
+
+      return (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: type === 'success' ? 'var(--accent-green)' : type === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-red)',
+          color: type === 'warning' ? '#000' : '#fff',
+          padding: '16px 24px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          zIndex: 1000,
+          animation: 'slideIn 0.3s ease-out'
+        }}>
+          <span style={{ fontSize: '18px' }}>
+            {type === 'success' ? '✓' : type === 'warning' ? '⚠' : '✕'}
+          </span>
+          <span style={{ fontWeight: '500' }}>{message}</span>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255,255,255,0.2)',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '4px 8px',
+              color: 'inherit',
+              cursor: 'pointer',
+              marginLeft: '8px'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      );
+    };
+
+    // Settings Modal Component
+    const SettingsModal = ({ isOpen, onClose, currentConfig, onSave, onExport, onImport, onClearAll, hasTrades, theme, onThemeChange }) => {
+      const [apiKey, setApiKey] = useState(currentConfig.apiKey || '');
+      const [binId, setBinId] = useState(currentConfig.binId || '');
+      const [isCreating, setIsCreating] = useState(false);
+      const [showApiKey, setShowApiKey] = useState(false);
+      const importRef = useRef(null);
+
+      const createNewBin = async () => {
+        if (!apiKey) {
+          alert('Please enter your API key first');
+          return;
+        }
+        
+        setIsCreating(true);
+        try {
+          const response = await fetch('https://api.jsonbin.io/v3/b', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Master-Key': apiKey,
+              'X-Bin-Name': 'TradeLog Data'
+            },
+            body: JSON.stringify({ trades: [] })
+          });
+          const data = await response.json();
+          
+          if (data.metadata && data.metadata.id) {
+            setBinId(data.metadata.id);
+            alert('Storage created successfully! Click Save to connect.');
+          } else {
+            alert('Failed to create storage. Check your API key.');
+          }
+        } catch (error) {
+          alert('Error creating storage: ' + error.message);
+        }
+        setIsCreating(false);
+      };
+
+      const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        alert('Copied to clipboard! Save this somewhere safe.');
+      };
+
+      if (!isOpen) return null;
+
+      const isConnected = currentConfig.apiKey && currentConfig.binId;
+
+      return (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }} onClick={onClose}>
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: '16px',
+            padding: '32px',
+            maxWidth: '560px',
+            width: '90%',
+            maxHeight: '85vh',
+            overflow: 'auto'
+          }} onClick={e => e.stopPropagation()}>
+            <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '24px' }}>Settings</h2>
+            
+            {/* Appearance Section */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ 
+                fontSize: '12px', 
+                color: 'var(--text-secondary)', 
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px'
+              }}>
+                Appearance
+              </h3>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                padding: '12px 16px',
+                background: 'var(--bg-tertiary)',
+                borderRadius: '8px',
+                border: '1px solid var(--border)'
+              }}>
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: '500' }}>Theme</p>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Choose light or dark mode</p>
+                </div>
+                <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-secondary)', borderRadius: '8px', padding: '4px' }}>
+                  <button
+                    onClick={() => onThemeChange('light')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: theme === 'light' ? 'var(--accent-blue)' : 'transparent',
+                      color: theme === 'light' ? 'white' : 'var(--text-secondary)',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    ☀️ Light
+                  </button>
+                  <button
+                    onClick={() => onThemeChange('dark')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: theme === 'dark' ? 'var(--accent-blue)' : 'transparent',
+                      color: theme === 'dark' ? 'white' : 'var(--text-secondary)',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    🌙 Dark
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Connection Status Banner */}
+            {isConnected && (
+              <div style={{
+                background: 'var(--accent-green-dim)',
+                border: '1px solid var(--accent-green)',
+                borderRadius: '8px',
+                padding: '16px',
+                marginBottom: '24px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <span style={{ 
+                    width: '10px', 
+                    height: '10px', 
+                    borderRadius: '50%', 
+                    background: 'var(--accent-green)'
+                  }} />
+                  <span style={{ color: 'var(--accent-green)', fontWeight: '600' }}>Connected to Cloud Storage</span>
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                  Your trades are automatically synced and backed up.
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px',
+                  padding: '8px 12px',
+                  background: 'var(--bg-secondary)',
+                  borderRadius: '6px',
+                  marginTop: '12px'
+                }}>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Your Bin ID:</span>
+                  <code style={{ 
+                    fontSize: '12px', 
+                    color: 'var(--text-primary)',
+                    fontFamily: 'JetBrains Mono, monospace'
+                  }}>{currentConfig.binId}</code>
+                  <button
+                    onClick={() => copyToClipboard(currentConfig.binId)}
+                    style={{
+                      background: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '4px',
+                      padding: '4px 8px',
+                      color: 'var(--text-secondary)',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      marginLeft: 'auto'
+                    }}
+                  >
+                    Copy
+                  </button>
+                </div>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                  ⚠️ Save this Bin ID somewhere safe! You'll need it to reconnect if you clear your browser data.
+                </p>
+              </div>
+            )}
+
+            {/* Data Management Section */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ 
+                fontSize: '12px', 
+                color: 'var(--text-secondary)', 
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px'
+              }}>
+                Data Management
+              </h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+                Export your trades as a backup file, import from a previous backup, or clear all data.
+              </p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => {
+                    onExport();
+                  }}
+                  disabled={!hasTrades}
+                  style={{
+                    background: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    padding: '10px 16px',
+                    color: hasTrades ? 'var(--accent-green)' : 'var(--text-secondary)',
+                    fontSize: '13px',
+                    cursor: hasTrades ? 'pointer' : 'not-allowed',
+                    opacity: hasTrades ? 1 : 0.5
+                  }}
+                >
+                  ↓ Export Backup
+                </button>
+                <button
+                  onClick={() => importRef.current?.click()}
+                  style={{
+                    background: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    padding: '10px 16px',
+                    color: 'var(--accent-blue)',
+                    fontSize: '13px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ↑ Import Backup
+                </button>
+                <input
+                  ref={importRef}
+                  type="file"
+                  accept=".json"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    onImport(e);
+                    onClose();
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    onClearAll();
+                    onClose();
+                  }}
+                  disabled={!hasTrades}
+                  style={{
+                    background: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    padding: '10px 16px',
+                    color: hasTrades ? 'var(--accent-red)' : 'var(--text-secondary)',
+                    fontSize: '13px',
+                    cursor: hasTrades ? 'pointer' : 'not-allowed',
+                    opacity: hasTrades ? 1 : 0.5
+                  }}
+                >
+                  Clear All Trades
+                </button>
+              </div>
+            </div>
+
+            {/* Cloud Storage Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ 
+                fontSize: '12px', 
+                color: 'var(--text-secondary)', 
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px'
+              }}>
+                Cloud Storage Setup
+              </h3>
+              
+              {!isConnected && (
+                <div style={{
+                  background: 'var(--bg-tertiary)',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  marginBottom: '20px',
+                  border: '1px solid var(--border)'
+                }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: 'var(--accent-blue)' }}>
+                    🚀 First Time Setup (2 minutes)
+                  </h4>
+                  <ol style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '2', paddingLeft: '20px' }}>
+                    <li>Go to <a href="https://jsonbin.io" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-blue)' }}>jsonbin.io</a> and create a free account</li>
+                    <li>Once logged in, click your profile icon → <strong>API Keys</strong></li>
+                    <li>Copy your <strong>X-Master-Key</strong> (starts with $2a$10$...)</li>
+                    <li>Paste it below and click <strong>"Create New Storage"</strong></li>
+                    <li>Click <strong>Save</strong> — you're all set!</li>
+                  </ol>
+                </div>
+              )}
+
+              {isConnected && (
+                <div style={{
+                  background: 'var(--bg-tertiary)',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  marginBottom: '20px',
+                  border: '1px solid var(--border)'
+                }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
+                    🔄 Reconnecting After Clearing Browser Data
+                  </h4>
+                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+                    If you clear your browser cache, just enter your API key and Bin ID below, then click Save. 
+                    Don't click "Create New Storage" — your data is already saved in your existing bin.
+                  </p>
+                </div>
+              )}
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '12px', 
+                  color: 'var(--text-secondary)', 
+                  marginBottom: '8px'
+                }}>
+                  API Key (X-Master-Key)
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="$2a$10$..."
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      color: 'var(--text-primary)',
+                      fontSize: '14px'
+                    }}
+                  />
+                  <button
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    style={{
+                      background: 'var(--bg-tertiary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      color: 'var(--text-secondary)',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      minWidth: '60px'
+                    }}
+                  >
+                    {showApiKey ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '6px' }}>
+                  Find this at jsonbin.io → Profile → API Keys
+                </p>
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '12px', 
+                  color: 'var(--text-secondary)', 
+                  marginBottom: '8px'
+                }}>
+                  Bin ID {isConnected && <span style={{ color: 'var(--accent-green)' }}>(connected)</span>}
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={binId}
+                    onChange={(e) => setBinId(e.target.value)}
+                    placeholder={isConnected ? "Your current Bin ID" : "Click 'Create New Storage' to generate"}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      color: 'var(--text-primary)',
+                      fontSize: '14px'
+                    }}
+                  />
+                  {!isConnected && (
+                    <button
+                      onClick={createNewBin}
+                      disabled={isCreating || !apiKey}
+                      style={{
+                        background: 'var(--accent-purple)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '12px 16px',
+                        color: 'white',
+                        fontSize: '13px',
+                        cursor: isCreating || !apiKey ? 'not-allowed' : 'pointer',
+                        opacity: isCreating || !apiKey ? 0.5 : 1,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {isCreating ? 'Creating...' : 'Create New Storage'}
+                    </button>
+                  )}
+                </div>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '6px' }}>
+                  {isConnected 
+                    ? "This is where your trades are stored. Save it somewhere safe!"
+                    : "This will be auto-generated when you create new storage, or paste an existing one to reconnect."
+                  }
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+              {isConnected && (
+                <button
+                  onClick={() => {
+                    if (confirm('Disconnect from cloud storage? Your trades will remain in the cloud but this browser will no longer sync.')) {
+                      onSave({ apiKey: '', binId: '' });
+                    }
+                  }}
+                  style={{
+                    background: 'var(--accent-red-dim)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '12px 20px',
+                    color: 'var(--accent-red)',
+                    fontSize: '14px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Disconnect
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                style={{
+                  background: 'var(--bg-tertiary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '8px',
+                  padding: '12px 20px',
+                  color: 'var(--text-primary)',
+                  fontSize: '14px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => onSave({ apiKey, binId })}
+                disabled={!apiKey || !binId}
+                style={{
+                  background: !apiKey || !binId ? 'var(--bg-tertiary)' : 'var(--accent-blue)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 20px',
+                  color: !apiKey || !binId ? 'var(--text-secondary)' : 'white',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: !apiKey || !binId ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // File Upload Component
+    const FileUpload = ({ onUpload }) => {
+      const [isDragging, setIsDragging] = useState(false);
+      const [isProcessing, setIsProcessing] = useState(false);
+      const fileInputRef = useRef(null);
+
+      const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file && file.name.endsWith('.csv')) {
+          processFile(file);
+        }
+      };
+
+      const processFile = (file) => {
+        setIsProcessing(true);
+        Papa.parse(file, {
+          header: true,
+          complete: (results) => {
+            onUpload(results.data, file.name);
+            setIsProcessing(false);
+            // Reset file input so same file can be selected again if needed
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+          },
+          error: () => {
+            setIsProcessing(false);
+            onUpload(null, file.name, true);
+          }
+        });
+      };
+
+      return (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => !isProcessing && fileInputRef.current?.click()}
+          style={{
+            background: isDragging ? 'var(--accent-blue)15' : 'var(--bg-card)',
+            border: `2px dashed ${isDragging ? 'var(--accent-blue)' : 'var(--border)'}`,
+            borderRadius: '12px',
+            padding: '40px',
+            textAlign: 'center',
+            cursor: isProcessing ? 'wait' : 'pointer',
+            transition: 'all 0.2s ease',
+            opacity: isProcessing ? 0.7 : 1
+          }}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            style={{ display: 'none' }}
+            onChange={(e) => e.target.files[0] && processFile(e.target.files[0])}
+          />
+          <div style={{
+            width: '48px',
+            height: '48px',
+            background: 'var(--bg-tertiary)',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px auto',
+            fontSize: '24px'
+          }}>
+            {isProcessing ? '⏳' : '📊'}
+          </div>
+          <p style={{ fontSize: '16px', fontWeight: '500', marginBottom: '8px' }}>
+            {isProcessing ? 'Processing...' : 'Drop your TradingView CSV here'}
+          </p>
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+            {isProcessing ? 'Please wait' : 'or click to browse files'}
+          </p>
+        </div>
+      );
+    };
+
+    // Footer Component
+    const Footer = () => (
+      <footer style={{
+        borderTop: '1px solid var(--border)',
+        padding: '16px 32px',
+        marginTop: '40px',
+        marginLeft: '260px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: '12px',
+        color: 'var(--text-secondary)'
+      }}>
+        <span>© {new Date().getFullYear()} ScareKrow Inc. All rights reserved.</span>
+        <a 
+          href="https://www.paypal.com/ncp/payment/LLFQ3AT7ZUY8J" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 20px',
+            background: 'linear-gradient(135deg, #4f7cff 0%, #3b5fd6 100%)',
+            color: '#fff',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            fontSize: '13px',
+            boxShadow: '0 4px 12px rgba(79, 124, 255, 0.3)',
+            transition: 'all 0.2s ease',
+            border: 'none'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(79, 124, 255, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(79, 124, 255, 0.3)';
+          }}
+        >
+          <i className="fas fa-heart" style={{ fontSize: '14px' }}></i>
+          <span>Support Us</span>
+        </a>
+      </footer>
+    );
+
+    // Main App Component
+    const App = () => {
+      const [trades, setTrades] = useState([]);
+      const [selectedDate, setSelectedDate] = useState(null);
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [toast, setToast] = useState(null);
+      const [isLoading, setIsLoading] = useState(true);
+      const [filters, setFilters] = useState({});
+      const [theme, setTheme] = useState(() => {
+        return localStorage.getItem('tradingJournal_theme') || 'dark';
+      });
+      const [dailyNotes, setDailyNotes] = useState(() => {
+        const saved = localStorage.getItem('tradingJournal_dailyNotes');
+        return saved ? JSON.parse(saved) : {};
+      });
+      const [jsonBinConfig, setJsonBinConfig] = useState(() => {
+        const saved = localStorage.getItem('tradingJournal_jsonBinConfig');
+        return saved ? JSON.parse(saved) : { apiKey: '', binId: '' };
+      });
+      const [showSettings, setShowSettings] = useState(false);
+
+      const isConnected = jsonBinConfig.apiKey && jsonBinConfig.binId;
+
+      // Apply theme to document
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+      }, [theme]);
+
+      // Save daily notes to localStorage and cloud
+      useEffect(() => {
+        localStorage.setItem('tradingJournal_dailyNotes', JSON.stringify(dailyNotes));
+      }, [dailyNotes]);
+
+      // Load trades on mount
+      useEffect(() => {
+        if (isConnected) {
+          loadTradesFromCloud();
+        } else {
+          const saved = localStorage.getItem('tradingJournal_trades');
+          setTrades(saved ? JSON.parse(saved) : []);
+          setIsLoading(false);
+        }
+      }, [jsonBinConfig.binId]);
+
+      // Save to localStorage as backup
+      useEffect(() => {
+        if (trades.length > 0) {
+          localStorage.setItem('tradingJournal_trades', JSON.stringify(trades));
+        }
+      }, [trades]);
+
+      const loadTradesFromCloud = async () => {
+        if (!isConnected) return;
+        
+        setIsLoading(true);
+        try {
+          const response = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinConfig.binId}/latest`, {
+            headers: {
+              'X-Master-Key': jsonBinConfig.apiKey
+            }
+          });
+          const data = await response.json();
+          
+          if (data.record && data.record.trades) {
+            setTrades(data.record.trades.sort((a, b) => new Date(b.exitTime) - new Date(a.exitTime)));
+          } else {
+            setTrades([]);
+          }
+        } catch (error) {
+          console.error('Error loading from JSONBin:', error);
+          showToast('Could not connect to cloud storage', 'error');
+          const saved = localStorage.getItem('tradingJournal_trades');
+          setTrades(saved ? JSON.parse(saved) : []);
+        }
+        setIsLoading(false);
+      };
+
+      const saveToCloud = async (updatedTrades) => {
+        if (!isConnected) return;
+        
+        try {
+          await fetch(`https://api.jsonbin.io/v3/b/${jsonBinConfig.binId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Master-Key': jsonBinConfig.apiKey
+            },
+            body: JSON.stringify({ trades: updatedTrades })
+          });
+        } catch (error) {
+          console.error('Error saving to JSONBin:', error);
+          showToast('Failed to sync to cloud', 'error');
+        }
+      };
+
+      const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+      };
+
+      const handleUpload = async (csvData, fileName, error = false) => {
+        if (error || !csvData) {
+          showToast('Failed to process file. Please try again.', 'error');
+          return;
+        }
+
+        const existingIds = new Set(trades.map(t => t.id));
+        const newTrades = processCSV(csvData, trades);
+        const addedTrades = newTrades.filter(t => !existingIds.has(t.id));
+        
+        if (addedTrades.length === 0) {
+          showToast('No new trades found. These trades may already be imported.', 'warning');
+          return;
+        }
+
+        setTrades(newTrades);
+        
+        if (isConnected) {
+          await saveToCloud(newTrades);
+          showToast(`Saved ${addedTrades.length} trades to cloud!`, 'success');
+        } else {
+          if (addedTrades.length === 1) {
+            showToast(`Successfully imported 1 new trade!`, 'success');
+          } else {
+            showToast(`Successfully imported ${addedTrades.length} new trades!`, 'success');
+          }
+        }
+      };
+
+      const handleUpdateNote = async (tradeId, note) => {
+        const updatedTrades = trades.map(t => 
+          t.id === tradeId ? { ...t, notes: note } : t
+        );
+        setTrades(updatedTrades);
+        if (isConnected) {
+          await saveToCloud(updatedTrades);
+        }
+      };
+
+      const handleUpdateTags = async (tradeId, tags) => {
+        const updatedTrades = trades.map(t => 
+          t.id === tradeId ? { ...t, tags: tags } : t
+        );
+        setTrades(updatedTrades);
+        if (isConnected) {
+          await saveToCloud(updatedTrades);
+        }
+      };
+
+      const handleUpdateDailyNote = (date, note) => {
+        const newNotes = { ...dailyNotes };
+        if (note.trim()) {
+          newNotes[date] = note;
+        } else {
+          delete newNotes[date];
+        }
+        setDailyNotes(newNotes);
+      };
+
+      const handleDeleteTrade = async (tradeId) => {
+        if (confirm('Are you sure you want to delete this trade?')) {
+          const updatedTrades = trades.filter(t => t.id !== tradeId);
+          setTrades(updatedTrades);
+          if (isConnected) {
+            await saveToCloud(updatedTrades);
+          }
+          showToast('Trade deleted', 'success');
+        }
+      };
+
+      const handleClearAll = async () => {
+        if (confirm('Are you sure you want to clear all trades? This cannot be undone.')) {
+          setTrades([]);
+          localStorage.removeItem('tradingJournal_trades');
+          if (isConnected) {
+            await saveToCloud([]);
+          }
+          showToast('All trades cleared', 'success');
+        }
+      };
+
+      const handleSaveSettings = async (config) => {
+        localStorage.setItem('tradingJournal_jsonBinConfig', JSON.stringify(config));
+        setJsonBinConfig(config);
+        setShowSettings(false);
+        
+        if (config.apiKey && config.binId) {
+          showToast('Cloud storage connected! Loading trades...', 'success');
+          // Sync current local trades to cloud if we have any
+          const localTrades = trades;
+          if (localTrades.length > 0) {
+            await saveToCloud(localTrades);
+          }
+        } else {
+          showToast('Disconnected from cloud storage', 'warning');
+        }
+      };
+
+      const handleExportData = () => {
+        const exportData = {
+          version: 1,
+          exportDate: new Date().toISOString(),
+          trades: trades
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tradelog-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Backup exported successfully!', 'success');
+      };
+
+      const handleImportData = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const importData = JSON.parse(e.target.result);
+            
+            if (!importData.trades || !Array.isArray(importData.trades)) {
+              showToast('Invalid backup file format', 'error');
+              return;
+            }
+
+            // Merge imported trades with existing (avoid duplicates)
+            const existingIds = new Set(trades.map(t => t.id));
+            const newTrades = importData.trades.filter(t => !existingIds.has(t.id));
+            
+            if (newTrades.length === 0) {
+              showToast('No new trades to import. All trades already exist.', 'warning');
+            } else {
+              const merged = [...trades, ...newTrades].sort((a, b) => 
+                new Date(b.exitTime) - new Date(a.exitTime)
+              );
+              setTrades(merged);
+              showToast(`Restored ${newTrades.length} trades from backup!`, 'success');
+            }
+          } catch (err) {
+            showToast('Failed to read backup file', 'error');
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+      };
+
+      // Calculate stats
+      const stats = useMemo(() => {
+        if (trades.length === 0) {
+          return { 
+            totalPnL: 0, winRate: 0, avgWin: 0, avgLoss: 0, profitFactor: 0, 
+            largestWin: 0, largestLoss: 0, avgTrade: 0, wins: 0, losses: 0,
+            streak: 0, streakType: 'none', bestDay: null, worstDay: null,
+            morningWinRate: 0, afternoonWinRate: 0, morningTrades: 0, afternoonTrades: 0
+          };
+        }
+
+        const wins = trades.filter(t => t.pnl > 0);
+        const losses = trades.filter(t => t.pnl < 0);
+        const totalPnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+        const winRate = (wins.length / trades.length) * 100;
+        const avgWin = wins.length > 0 ? wins.reduce((sum, t) => sum + t.pnl, 0) / wins.length : 0;
+        const avgLoss = losses.length > 0 ? losses.reduce((sum, t) => sum + t.pnl, 0) / losses.length : 0;
+        const grossWins = wins.reduce((sum, t) => sum + t.pnl, 0);
+        const grossLosses = Math.abs(losses.reduce((sum, t) => sum + t.pnl, 0));
+        const profitFactor = grossLosses > 0 ? grossWins / grossLosses : grossWins > 0 ? Infinity : 0;
+        const largestWin = wins.length > 0 ? Math.max(...wins.map(t => t.pnl)) : 0;
+        const largestLoss = losses.length > 0 ? Math.min(...losses.map(t => t.pnl)) : 0;
+        const avgTrade = totalPnL / trades.length;
+
+        // Calculate daily P&L for streak and best/worst day
+        const dailyPnL = {};
+        trades.forEach(t => {
+          const day = t.exitTime.split(' ')[0];
+          if (!dailyPnL[day]) dailyPnL[day] = 0;
+          dailyPnL[day] += t.pnl;
+        });
+
+        const sortedDays = Object.entries(dailyPnL).sort((a, b) => a[0].localeCompare(b[0]));
+        
+        // Calculate streak (consecutive profitable/losing days)
+        let streak = 0;
+        let streakType = 'none';
+        if (sortedDays.length > 0) {
+          const lastDayPnL = sortedDays[sortedDays.length - 1][1];
+          streakType = lastDayPnL >= 0 ? 'win' : 'loss';
+          
+          for (let i = sortedDays.length - 1; i >= 0; i--) {
+            const dayPnL = sortedDays[i][1];
+            if ((streakType === 'win' && dayPnL >= 0) || (streakType === 'loss' && dayPnL < 0)) {
+              streak++;
+            } else {
+              break;
+            }
+          }
+        }
+
+        // Best and worst day
+        let bestDay = null;
+        let worstDay = null;
+        if (sortedDays.length > 0) {
+          const sorted = [...sortedDays].sort((a, b) => b[1] - a[1]);
+          bestDay = { date: sorted[0][0], pnl: sorted[0][1] };
+          worstDay = { date: sorted[sorted.length - 1][0], pnl: sorted[sorted.length - 1][1] };
+        }
+
+        // Time of day analysis (morning = before 12pm, afternoon = 12pm+)
+        const morningTrades = trades.filter(t => {
+          const hour = parseInt(t.exitTime.split(' ')[1].split(':')[0]);
+          return hour < 12;
+        });
+        const afternoonTrades = trades.filter(t => {
+          const hour = parseInt(t.exitTime.split(' ')[1].split(':')[0]);
+          return hour >= 12;
+        });
+
+        const morningWins = morningTrades.filter(t => t.pnl > 0).length;
+        const afternoonWins = afternoonTrades.filter(t => t.pnl > 0).length;
+        const morningWinRate = morningTrades.length > 0 ? (morningWins / morningTrades.length) * 100 : 0;
+        const afternoonWinRate = afternoonTrades.length > 0 ? (afternoonWins / afternoonTrades.length) * 100 : 0;
+
+        return { 
+          totalPnL, winRate, avgWin, avgLoss, profitFactor, largestWin, largestLoss, avgTrade, 
+          wins: wins.length, losses: losses.length,
+          streak, streakType, bestDay, worstDay,
+          morningWinRate, afternoonWinRate, 
+          morningTrades: morningTrades.length, 
+          afternoonTrades: afternoonTrades.length
+        };
+      }, [trades]);
+
+      const filteredTrades = useMemo(() => {
+        let result = trades;
+        
+        // Calendar date filter (from dashboard click)
+        if (selectedDate) {
+          result = result.filter(t => t.exitTime.startsWith(selectedDate));
+        }
+        
+        // Date range filter
+        if (filters.dateFrom) {
+          result = result.filter(t => t.exitTime.split(' ')[0] >= filters.dateFrom);
+        }
+        if (filters.dateTo) {
+          result = result.filter(t => t.exitTime.split(' ')[0] <= filters.dateTo);
+        }
+        
+        // Symbol filter
+        if (filters.symbol) {
+          result = result.filter(t => t.symbol.split('.').pop().replace(/[A-Z]\d+$/, '') === filters.symbol);
+        }
+        
+        // Direction filter
+        if (filters.direction) {
+          result = result.filter(t => t.direction === filters.direction);
+        }
+        
+        // Outcome filter
+        if (filters.outcome) {
+          if (filters.outcome === 'Winners') {
+            result = result.filter(t => t.pnl > 0);
+          } else if (filters.outcome === 'Losers') {
+            result = result.filter(t => t.pnl < 0);
+          }
+        }
+
+        // Tag filter
+        if (filters.tag) {
+          result = result.filter(t => t.tags && t.tags.includes(filters.tag));
+        }
+        
+        // P&L range filter
+        if (filters.minPnl) {
+          result = result.filter(t => t.pnl >= parseFloat(filters.minPnl));
+        }
+        if (filters.maxPnl) {
+          result = result.filter(t => t.pnl <= parseFloat(filters.maxPnl));
+        }
+        
+        return result;
+      }, [trades, selectedDate, filters]);
+
+      return (
+        <div style={{ minHeight: '100vh' }}>
+          <Header 
+            totalPnL={stats.totalPnL} 
+            winRate={stats.winRate} 
+            totalTrades={trades.length}
+            isConnected={isConnected}
+            streak={stats.streak}
+            streakType={stats.streakType}
+          />
+
+          <Sidebar 
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            onSettingsClick={() => setShowSettings(true)}
+          />
+          
+          {/* Settings Modal */}
+          <SettingsModal
+            isOpen={showSettings}
+            onClose={() => setShowSettings(false)}
+            currentConfig={jsonBinConfig}
+            onSave={handleSaveSettings}
+            onExport={handleExportData}
+            onImport={handleImportData}
+            onClearAll={handleClearAll}
+            hasTrades={trades.length > 0}
+            theme={theme}
+            onThemeChange={setTheme}
+          />
+
+          {/* Loading Overlay */}
+          {isLoading && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(10, 10, 15, 0.9)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 999
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '32px', marginBottom: '16px', animation: 'pulse 1s infinite' }}>📊</div>
+                <p style={{ color: 'var(--text-secondary)' }}>Loading trades...</p>
+              </div>
+            </div>
+          )}
+          
+          <main className="main-content" style={{ marginLeft: '260px', padding: '24px 32px' }}>
+            {/* Dashboard Tab */}
+            {activeTab === 'dashboard' && (
+              <div className="animate-fade">
+                {trades.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>📈</div>
+                    <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '8px' }}>No trades yet</h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                      Upload your TradingView CSV to get started
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('upload')}
+                      style={{
+                        background: 'var(--accent-blue)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '12px 24px',
+                        color: 'white',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Upload Trades
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {/* Stats Grid - 6 cards in a row */}
+                    <div className="stats-grid" style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(6, 1fr)', 
+                      gap: '16px',
+                      marginBottom: '24px'
+                    }}>
+                      <StatCard 
+                        label="Avg Winner" 
+                        value={formatCurrency(stats.avgWin)} 
+                        color="var(--accent-green)"
+                        tooltip="The average profit on your winning trades."
+                        subValue={stats.wins > 0 ? `Across ${stats.wins} winning trade${stats.wins > 1 ? 's' : ''}` : null}
+                      />
+                      <StatCard 
+                        label="Avg Loser" 
+                        value={formatCurrency(stats.avgLoss)} 
+                        color="var(--accent-red)"
+                        tooltip="The average loss on your losing trades."
+                        subValue={stats.losses > 0 ? `Across ${stats.losses} losing trade${stats.losses > 1 ? 's' : ''}` : null}
+                      />
+                      <StatCard 
+                        label="Profit Factor" 
+                        value={stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2)} 
+                        color="var(--accent-blue)"
+                        tooltip="Ratio of gross profits to gross losses. Above 1.0 = profitable. 1.5-2.0 = good. Above 2.0 = excellent."
+                        subValue={
+                          stats.profitFactor === Infinity 
+                            ? "No losses yet!" 
+                            : stats.profitFactor === 0 
+                              ? "No wins yet"
+                              : stats.losses > 0 
+                                ? `For every $1 lost, you make $${stats.profitFactor.toFixed(2)}` 
+                                : null
+                        }
+                      />
+                      <StatCard 
+                        label="Largest Win" 
+                        value={formatCurrency(stats.largestWin)} 
+                        color="var(--accent-green)"
+                        tooltip="Your biggest single winning trade."
+                      />
+                      <StatCard 
+                        label="Largest Loss" 
+                        value={formatCurrency(stats.largestLoss)} 
+                        color="var(--accent-red)"
+                        tooltip="Your biggest single losing trade."
+                      />
+                      <StatCard 
+                        label="Avg Trade" 
+                        value={formatCurrency(stats.avgTrade)} 
+                        color={stats.avgTrade >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}
+                        tooltip="Your average P&L per trade (expectancy). Positive = profitable system."
+                        subValue={stats.avgTrade !== 0 ? `Expected per trade` : null}
+                      />
+                    </div>
+
+                    {/* 3-Column Grid System */}
+                    <div className="dashboard-grid" style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(3, 1fr)', 
+                      gap: '24px',
+                      marginBottom: '24px'
+                    }}>
+                      {/* Row 1: Win Rate (1/3) + Calendar (2/3) */}
+                      <div style={{ gridColumn: 'span 1', display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                          <WinRateChart 
+                            wins={stats.wins} 
+                            losses={stats.losses} 
+                            winRate={stats.winRate} 
+                          />
+                        </div>
+                      </div>
+                      <div style={{ gridColumn: 'span 2', display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                          <Calendar 
+                            trades={trades} 
+                            onDayClick={(date) => {
+                              setSelectedDate(date === selectedDate ? null : date);
+                              setActiveTab('trades');
+                            }}
+                            selectedDate={selectedDate}
+                            dailyNotes={dailyNotes}
+                            onUpdateDailyNote={handleUpdateDailyNote}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 2: Cumulative P&L (2/3) + Time of Day (1/3) */}
+                      <div style={{ gridColumn: 'span 2', display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                          <PnLChart trades={trades} />
+                        </div>
+                      </div>
+                      <div style={{ gridColumn: 'span 1', display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                          <TimeAnalysis 
+                            morningWinRate={stats.morningWinRate}
+                            afternoonWinRate={stats.afternoonWinRate}
+                            morningTrades={stats.morningTrades}
+                            afternoonTrades={stats.afternoonTrades}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 3: Tag Performance (2/3) + Best/Worst Days (1/3) */}
+                      <div style={{ gridColumn: 'span 2', display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                          <TagPerformance 
+                            trades={trades}
+                            filters={filters}
+                            onFilterChange={(newFilters) => {
+                              setFilters(newFilters);
+                              if (newFilters.tag) {
+                                setActiveTab('trades');
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div style={{ gridColumn: 'span 1', display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                          <BestWorstDay 
+                            bestDay={stats.bestDay}
+                            worstDay={stats.worstDay}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 4: Recent Trades (3/3) */}
+                      <div style={{ gridColumn: 'span 3' }}>
+                        <div style={{
+                          background: 'var(--bg-card)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '12px',
+                          padding: '20px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                            <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)' }}>
+                              RECENT TRADES
+                            </h3>
+                            <button
+                              onClick={() => setActiveTab('trades')}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: 'var(--accent-blue)',
+                                fontSize: '13px',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              View All →
+                            </button>
+                          </div>
+                          
+                          {trades.slice(0, 5).map(trade => (
+                            <div
+                              key={trade.id}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '12px 0',
+                                borderBottom: '1px solid var(--border)'
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '11px',
+                                  fontWeight: '600',
+                                  background: trade.direction === 'Long' ? 'var(--accent-green-dim)' : 'var(--accent-red-dim)',
+                                  color: trade.direction === 'Long' ? 'var(--accent-green)' : 'var(--accent-red)'
+                                }}>
+                                  {trade.direction}
+                                </span>
+                                <span className="mono" style={{ fontSize: '13px' }}>
+                                  {trade.symbol.split('.').pop().replace(/[A-Z]\d+$/, '')}
+                                </span>
+                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                  {formatDate(trade.exitTime)}
+                                </span>
+                              </div>
+                              <span className="mono" style={{ 
+                                fontWeight: '600',
+                                color: trade.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'
+                              }}>
+                                {formatCurrency(trade.pnl)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Trades Tab */}
+            {activeTab === 'trades' && (
+              <div className="animate-fade">
+                {selectedDate && (
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '12px', 
+                    marginBottom: '16px',
+                    padding: '12px 16px',
+                    background: 'var(--bg-card)',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)'
+                  }}>
+                    <span style={{ fontSize: '14px' }}>Showing trades for {formatDate(selectedDate)}</span>
+                    <button
+                      onClick={() => setSelectedDate(null)}
+                      style={{
+                        background: 'var(--bg-tertiary)',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '4px 8px',
+                        color: 'var(--text-secondary)',
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+
+                {trades.length > 0 && (
+                  <TradeFilters 
+                    trades={trades} 
+                    filters={filters} 
+                    onFilterChange={setFilters} 
+                  />
+                )}
+
+                {/* Filtered Stats Summary */}
+                {filteredTrades.length > 0 && filteredTrades.length !== trades.length && (
+                  <div style={{
+                    display: 'flex',
+                    gap: '24px',
+                    padding: '12px 20px',
+                    background: 'var(--bg-tertiary)',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    fontSize: '13px'
+                  }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Showing <strong style={{ color: 'var(--text-primary)' }}>{filteredTrades.length}</strong> of {trades.length} trades
+                    </span>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Filtered P&L: <strong style={{ color: filteredTrades.reduce((sum, t) => sum + t.pnl, 0) >= 0 ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                        {formatCurrency(filteredTrades.reduce((sum, t) => sum + t.pnl, 0))}
+                      </strong>
+                    </span>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Win Rate: <strong style={{ color: 'var(--text-primary)' }}>
+                        {((filteredTrades.filter(t => t.pnl > 0).length / filteredTrades.length) * 100).toFixed(1)}%
+                      </strong>
+                    </span>
+                  </div>
+                )}
+
+                {filteredTrades.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                      {trades.length === 0 ? 'No trades yet' : 'No trades match your filters'}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Column Headers */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '100px 100px 80px 120px 120px 80px 100px 1fr',
+                      gap: '16px',
+                      padding: '12px 20px',
+                      fontSize: '11px',
+                      color: 'var(--text-secondary)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px'
+                    }}>
+                      <div>Date</div>
+                      <div>Direction</div>
+                      <div>Symbol</div>
+                      <div>Entry</div>
+                      <div>Exit</div>
+                      <div>Qty</div>
+                      <div>P&L</div>
+                      <div></div>
+                    </div>
+                    
+                    {filteredTrades.map(trade => (
+                      <TradeRow 
+                        key={trade.id}
+                        trade={trade}
+                        onUpdateNote={handleUpdateNote}
+                        onUpdateTags={handleUpdateTags}
+                        onDelete={handleDeleteTrade}
+                      />
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Upload Tab */}
+            {activeTab === 'upload' && (
+              <div className="animate-fade" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                <FileUpload onUpload={handleUpload} />
+                
+                <div style={{ 
+                  marginTop: '24px',
+                  padding: '20px',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px'
+                }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>How to export from TradingView</h3>
+                  <ol style={{ 
+                    fontSize: '14px', 
+                    color: 'var(--text-secondary)', 
+                    lineHeight: '1.8',
+                    paddingLeft: '20px'
+                  }}>
+                    <li>Open your broker panel in TradingView</li>
+                    <li>Go to the "Orders" or "History" tab</li>
+                    <li>Click the export/download button (usually a download icon)</li>
+                    <li>Select "Export to CSV"</li>
+                    <li>Upload the CSV file here</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* Toast Notification */}
+          {toast && (
+            <Toast 
+              message={toast.message} 
+              type={toast.type} 
+              onClose={() => setToast(null)} 
+            />
+          )}
+
+          {/* Footer */}
+          <Footer />
+        </div>
+      );
+    };
+
+    // Include Chart.js date adapter
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js';
+    script.onload = () => {
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    };
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>
