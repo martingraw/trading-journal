@@ -148,28 +148,33 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
           <button
             onClick={(e) => openNoteModal(dateStr, e)}
             style={{
-              background: mounted && dailyNotes[dateStr] ? 'var(--accent-blue)' : 'transparent',
-              border: 'none',
+              background: mounted && dailyNotes[dateStr] ? 'var(--accent-yellow)' : 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid',
+              borderColor: mounted && dailyNotes[dateStr] ? 'var(--accent-yellow)' : 'rgba(255, 255, 255, 0.2)',
               borderRadius: 'var(--radius-base)',
-              padding: '2px 4px',
+              padding: '4px 6px',
               cursor: 'pointer',
-              color: mounted && dailyNotes[dateStr] ? 'white' : 'var(--text-tertiary)',
-              fontSize: '10px',
+              color: mounted && dailyNotes[dateStr] ? '#000' : 'var(--text-primary)',
+              fontSize: '12px',
               transition: 'all var(--transition-fast)',
-              opacity: 0.7,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: '24px',
+              minHeight: '24px',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '1';
+              e.currentTarget.style.transform = 'scale(1.1)';
               if (!mounted || !dailyNotes[dateStr]) {
-                e.currentTarget.style.background = 'var(--bg-hover)';
-                e.currentTarget.style.color = 'var(--text-primary)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.borderColor = 'var(--accent-blue)';
               }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '0.7';
+              e.currentTarget.style.transform = 'scale(1)';
               if (!mounted || !dailyNotes[dateStr]) {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--text-tertiary)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
               }
             }}
             title={mounted && dailyNotes[dateStr] ? 'Edit note' : 'Add note'}
