@@ -49,9 +49,14 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
 
   rows.forEach((row: any) => {
     // Normalize symbol names (remove "MICRO " prefix and standardize)
-    let symbol = row.Symbol;
-    if (symbol.startsWith('MICRO ')) {
-      symbol = 'M' + symbol.replace('MICRO ', '');
+    let symbol = row.Symbol || '';
+    
+    // Handle various formats: "MICRO NQ", "MNQ", "NQ", etc.
+    if (symbol.includes('MICRO')) {
+      // Extract the base symbol after MICRO
+      const parts = symbol.split(' ');
+      const baseSymbol = parts[parts.length - 1]; // Get last part (NQ, ES, GC, etc.)
+      symbol = 'M' + baseSymbol;
     }
     
     const side = row.Side;
