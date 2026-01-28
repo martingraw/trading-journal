@@ -257,7 +257,7 @@ export default function FileUpload({ onImport }: FileUploadProps) {
           }}
         >
           <li>Open TradingView and go to the Trading Panel</li>
-          <li>Click on the "History" tab</li>
+          <li>Click on the &quot;History&quot; tab</li>
           <li>Click the export button (download icon)</li>
           <li>Save the CSV file to your computer</li>
           <li>Upload the CSV file here</li>

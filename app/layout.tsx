@@ -30,9 +30,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <head>
-        <link rel="stylesheet" href="/fontawesome.css" />
-      </head>
       <body>
         <TradeProvider>{children}</TradeProvider>
       </body>
