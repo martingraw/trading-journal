@@ -128,9 +128,10 @@ export default function FileUpload({ onImport }: FileUploadProps) {
               style={{
                 fontSize: '64px',
                 marginBottom: 'var(--space-4)',
+                color: 'var(--accent-blue)',
               }}
             >
-              ⏳
+              <i className="fas fa-spinner fa-spin" />
             </div>
             <h3 className="heading-4" style={{ marginBottom: 'var(--space-2)' }}>
               Processing...
@@ -146,9 +147,10 @@ export default function FileUpload({ onImport }: FileUploadProps) {
                 fontSize: '64px',
                 marginBottom: 'var(--space-4)',
                 opacity: isDragging ? 1 : 0.6,
+                color: 'var(--accent-blue)',
               }}
             >
-              📁
+              <i className="fas fa-file-csv" />
             </div>
             <h3 className="heading-4" style={{ marginBottom: 'var(--space-2)' }}>
               {isDragging ? 'Drop your file here' : 'Drag & Drop CSV File'}

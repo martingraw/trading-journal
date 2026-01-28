@@ -46,9 +46,10 @@ export default function EmptyStateCard({
           fontSize: '80px',
           marginBottom: 'var(--space-6)',
           opacity: 0.9,
+          color: 'var(--accent-blue)',
         }}
       >
-        {icon}
+        <i className={`fas ${icon}`} />
       </div>
 
       {/* Title */}

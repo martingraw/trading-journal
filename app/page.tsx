@@ -37,7 +37,7 @@ export default function Home() {
           /* Empty State - Adapts based on connection status */
           isConnected ? (
             <EmptyStateCard
-              icon="📊"
+              icon="fa-chart-line"
               title="Import Your First Trades"
               description="You're all set up! Now import your trading history from your TradingView CSV export to start tracking your performance."
               primaryAction={{
@@ -49,7 +49,7 @@ export default function Home() {
             />
           ) : (
             <EmptyStateCard
-              icon="🔧"
+              icon="fa-cog"
               title="Set Up Cloud Sync"
               description="First, connect to JSONBin for free cloud backup and sync across devices. Your trades will be stored securely."
               primaryAction={{

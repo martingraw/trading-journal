@@ -48,7 +48,12 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
   const openPositions: Record<string, any[]> = {};
 
   rows.forEach((row: any) => {
-    const symbol = row.Symbol;
+    // Normalize symbol names (remove "MICRO " prefix and standardize)
+    let symbol = row.Symbol;
+    if (symbol.startsWith('MICRO ')) {
+      symbol = 'M' + symbol.replace('MICRO ', '');
+    }
+    
     const side = row.Side;
     const qty = parseInt(row['Fill Qty']) || parseInt(row.Qty) || 1;
     const price = parseFloat(row['Avg Fill Price']);
