@@ -29,8 +29,16 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
 
   // Sort by Status Time chronologically
   rows.sort((a: any, b: any) => {
-    const dateA = new Date(a['Status Time']).getTime();
-    const dateB = new Date(b['Status Time']).getTime();
+    // Parse dates in M/D/YY H:MM format
+    const parseDate = (dateStr: string) => {
+      const [datePart, timePart] = dateStr.split(' ');
+      const [month, day, year] = datePart.split('/');
+      const [hour, minute] = timePart.split(':');
+      return new Date(2000 + parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute)).getTime();
+    };
+    
+    const dateA = parseDate(a['Status Time']);
+    const dateB = parseDate(b['Status Time']);
     return dateA - dateB;
   });
 
@@ -68,7 +76,14 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
     const side = row.Side;
     const qty = parseInt(row['Fill Qty']) || parseInt(row.Qty) || 1;
     const price = parseFloat(row['Avg Fill Price']);
-    const time = row['Status Time'];
+    const timeStr = row['Status Time'];
+    
+    // Convert M/D/YY H:MM to YYYY-MM-DD HH:MM:SS format
+    const [datePart, timePart] = timeStr.split(' ');
+    const [month, day, year] = datePart.split('/');
+    const [hour, minute] = timePart.split(':');
+    const fullYear = 2000 + parseInt(year);
+    const time = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
 
     if (!openPositions[symbol]) {
       openPositions[symbol] = [];
