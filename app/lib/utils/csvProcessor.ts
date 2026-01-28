@@ -48,15 +48,21 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
   const openPositions: Record<string, any[]> = {};
 
   rows.forEach((row: any) => {
-    // Normalize symbol names (remove "MICRO " prefix and standardize)
+    // Normalize symbol names - extract just the base symbol
     let symbol = row.Symbol || '';
     
-    // Handle various formats: "MICRO NQ", "MNQ", "NQ", etc.
-    if (symbol.includes('MICRO')) {
-      // Extract the base symbol after MICRO
-      const parts = symbol.split(' ');
-      const baseSymbol = parts[parts.length - 1]; // Get last part (NQ, ES, GC, etc.)
-      symbol = 'M' + baseSymbol;
+    // Remove everything before the last dot and any contract months
+    // "F.US.MNQH26" → "MNQ"
+    // "F.US.MESH26" → "MES"
+    // "F.US.MGCG26" → "MGC"
+    if (symbol.includes('.')) {
+      const parts = symbol.split('.');
+      symbol = parts[parts.length - 1]; // Get last part after dots
+    }
+    
+    // Remove contract month codes (H26, G26, etc.) - last 3 characters if they match pattern
+    if (symbol.length > 3 && /[A-Z]\d{2}$/.test(symbol)) {
+      symbol = symbol.slice(0, -3);
     }
     
     const side = row.Side;
