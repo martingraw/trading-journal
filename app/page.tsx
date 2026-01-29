@@ -243,7 +243,10 @@ export default function Home() {
               <CalendarHeatmap
                 tradesByDay={tradesByDay}
                 selectedDate={selectedDate}
-                onDateClick={setSelectedDate}
+                onDateClick={(date) => {
+                  setSelectedDate(date);
+                  router.push('/trades');
+                }}
               />
             </div>
 
