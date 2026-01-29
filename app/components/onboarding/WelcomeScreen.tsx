@@ -52,7 +52,9 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
       >
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-10)' }}>
-          <div style={{ fontSize: '64px', marginBottom: 'var(--space-4)' }}>🎯</div>
+          <div style={{ fontSize: '64px', marginBottom: 'var(--space-4)', color: 'var(--accent-blue)' }}>
+            <i className="fas fa-bullseye" />
+          </div>
           <h1 className="heading-2" style={{ marginBottom: 'var(--space-2)' }}>
             Welcome to TradeLog
           </h1>
@@ -91,9 +93,10 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '32px',
+                color: 'white',
               }}
             >
-              ☁️
+              <i className="fas fa-cloud" />
             </div>
             <div
               className="label"
@@ -104,7 +107,7 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
                 fontWeight: 'var(--font-bold)',
               }}
             >
-              1️⃣ CLOUD SYNC
+              <i className="fas fa-circle" style={{ fontSize: '8px', marginRight: 'var(--space-1)' }} /> CLOUD SYNC
             </div>
             <h3 className="heading-5" style={{ marginBottom: 'var(--space-3)' }}>
               Set Up JSONBin
@@ -135,9 +138,10 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '32px',
+                color: 'white',
               }}
             >
-              📊
+              <i className="fas fa-chart-bar" />
             </div>
             <div
               className="label"
@@ -148,7 +152,7 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
                 fontWeight: 'var(--font-bold)',
               }}
             >
-              2️⃣ IMPORT TRADES
+              <i className="fas fa-circle" style={{ fontSize: '8px', marginRight: 'var(--space-1)' }} /> IMPORT TRADES
             </div>
             <h3 className="heading-5" style={{ marginBottom: 'var(--space-3)' }}>
               Upload CSV
@@ -179,9 +183,10 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '32px',
+                color: 'white',
               }}
             >
-              📈
+              <i className="fas fa-chart-line" />
             </div>
             <div
               className="label"
@@ -192,7 +197,7 @@ export default function WelcomeScreen({ onDismiss, onGetStarted }: WelcomeScreen
                 fontWeight: 'var(--font-bold)',
               }}
             >
-              3️⃣ ANALYZE & WIN
+              <i className="fas fa-circle" style={{ fontSize: '8px', marginRight: 'var(--space-1)' }} /> ANALYZE & WIN
             </div>
             <h3 className="heading-5" style={{ marginBottom: 'var(--space-3)' }}>
               Track Performance
