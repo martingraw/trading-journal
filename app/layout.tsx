@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: 'TradeLog - Trading Journal & Analytics',
   description: 'Professional trading journal with advanced analytics and performance tracking',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.png',
   },
 };
 
