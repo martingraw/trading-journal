@@ -63,25 +63,16 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
     }
   };
 
-  // Get heat color based on P&L
+  // Get heat color based on P&L - consistent colors for wins/losses
   const getHeatColor = (pnl: number): string => {
     if (pnl === 0) return 'var(--bg-elevated)';
-
-    const maxPnL = Math.max(...Object.values(tradesByDay).map(d => Math.abs(d.pnl)));
-    const intensity = Math.min(Math.abs(pnl) / maxPnL, 1);
-
+    
+    // Single consistent color for all winning days
     if (pnl > 0) {
-      // Green shades
-      if (intensity > 0.75) return 'rgba(0, 212, 170, 0.8)';
-      if (intensity > 0.5) return 'rgba(0, 212, 170, 0.6)';
-      if (intensity > 0.25) return 'rgba(0, 212, 170, 0.4)';
-      return 'rgba(0, 212, 170, 0.2)';
+      return 'rgba(16, 185, 129, 0.35)'; // Nice mint green
     } else {
-      // Red shades
-      if (intensity > 0.75) return 'rgba(255, 82, 82, 0.8)';
-      if (intensity > 0.5) return 'rgba(255, 82, 82, 0.6)';
-      if (intensity > 0.25) return 'rgba(255, 82, 82, 0.4)';
-      return 'rgba(255, 82, 82, 0.2)';
+      // Single consistent color for all losing days
+      return 'rgba(239, 68, 68, 0.35)'; // Clear red
     }
   };
 
