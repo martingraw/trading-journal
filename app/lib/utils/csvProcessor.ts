@@ -29,12 +29,18 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
 
   // Sort by Status Time chronologically
   rows.sort((a: any, b: any) => {
-    // Parse dates in M/D/YY H:MM format
+    // Parse dates - handle both formats: M/D/YY H:MM and YYYY-MM-DD HH:MM:SS
     const parseDate = (dateStr: string) => {
-      const [datePart, timePart] = dateStr.split(' ');
-      const [month, day, year] = datePart.split('/');
-      const [hour, minute] = timePart.split(':');
-      return new Date(2000 + parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute)).getTime();
+      if (dateStr.includes('/')) {
+        // M/D/YY H:MM format
+        const [datePart, timePart] = dateStr.split(' ');
+        const [month, day, year] = datePart.split('/');
+        const [hour, minute] = timePart.split(':');
+        return new Date(2000 + parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute)).getTime();
+      } else {
+        // YYYY-MM-DD HH:MM:SS format
+        return new Date(dateStr).getTime();
+      }
     };
     
     const dateA = parseDate(a['Status Time']);
@@ -78,12 +84,19 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
     const price = parseFloat(row['Avg Fill Price']);
     const timeStr = row['Status Time'];
     
-    // Convert M/D/YY H:MM to YYYY-MM-DD HH:MM:SS format
-    const [datePart, timePart] = timeStr.split(' ');
-    const [month, day, year] = datePart.split('/');
-    const [hour, minute] = timePart.split(':');
-    const fullYear = 2000 + parseInt(year);
-    const time = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
+    // Convert time to YYYY-MM-DD HH:MM:SS format - handle both formats
+    let time: string;
+    if (timeStr.includes('/')) {
+      // M/D/YY H:MM format
+      const [datePart, timePart] = timeStr.split(' ');
+      const [month, day, year] = datePart.split('/');
+      const [hour, minute] = timePart.split(':');
+      const fullYear = 2000 + parseInt(year);
+      time = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
+    } else {
+      // Already in YYYY-MM-DD HH:MM:SS format
+      time = timeStr;
+    }
 
     if (!openPositions[symbol]) {
       openPositions[symbol] = [];
