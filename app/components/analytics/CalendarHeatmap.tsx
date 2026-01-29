@@ -79,7 +79,14 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
   // Build calendar grid
   const calendarDays = [];
   // Only compute today's date after mount to prevent hydration mismatch
-  const todayStr = mounted ? new Date().toISOString().split('T')[0] : '';
+  // Use local date string to avoid timezone issues
+  const todayStr = mounted ? (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  })() : '';
 
   // Empty cells for days before month starts
   for (let i = 0; i < startingDayOfWeek; i++) {
@@ -413,7 +420,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
               }}
             >
               <h3 className="heading-4">
-                Daily Note - {new Date(noteModalDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                Daily Note - {new Date(noteModalDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </h3>
               <button
                 onClick={closeNoteModal}
