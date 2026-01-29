@@ -146,34 +146,24 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
           <button
             onClick={(e) => openNoteModal(dateStr, e)}
             style={{
-              background: mounted && dailyNotes[dateStr] ? 'var(--accent-yellow)' : 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid',
-              borderColor: mounted && dailyNotes[dateStr] ? 'var(--accent-yellow)' : 'rgba(255, 255, 255, 0.2)',
-              borderRadius: 'var(--radius-base)',
-              padding: '4px 6px',
+              background: 'transparent',
+              border: 'none',
+              padding: '4px',
               cursor: 'pointer',
-              color: mounted && dailyNotes[dateStr] ? '#000' : 'var(--text-primary)',
-              fontSize: '12px',
+              color: mounted && dailyNotes[dateStr] ? 'var(--accent-blue)' : 'var(--text-secondary)',
+              fontSize: '14px',
               transition: 'all var(--transition-fast)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minWidth: '24px',
-              minHeight: '24px',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              if (!mounted || !dailyNotes[dateStr]) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.borderColor = 'var(--accent-blue)';
-              }
+              e.currentTarget.style.transform = 'scale(1.2)';
+              e.currentTarget.style.color = 'var(--accent-blue)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'scale(1)';
-              if (!mounted || !dailyNotes[dateStr]) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-              }
+              e.currentTarget.style.color = mounted && dailyNotes[dateStr] ? 'var(--accent-blue)' : 'var(--text-secondary)';
             }}
             title={mounted && dailyNotes[dateStr] ? 'Edit note' : 'Add note'}
           >
