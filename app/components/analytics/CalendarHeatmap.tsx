@@ -67,12 +67,12 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
   const getHeatColor = (pnl: number): string => {
     if (pnl === 0) return 'var(--bg-elevated)';
     
-    // Single consistent color for all winning days
+    // Single consistent color for all winning days - darker teal/green
     if (pnl > 0) {
-      return 'rgba(16, 185, 129, 0.35)'; // Nice mint green
+      return 'rgba(16, 95, 89, 0.6)'; // Dark teal green
     } else {
-      // Single consistent color for all losing days
-      return 'rgba(239, 68, 68, 0.35)'; // Clear red
+      // Single consistent color for all losing days - dark burgundy/maroon
+      return 'rgba(95, 33, 49, 0.8)'; // Dark burgundy
     }
   };
 
