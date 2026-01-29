@@ -81,10 +81,18 @@ export default function Home() {
               <div
                 style={{
                   background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-lg)',
                   padding: 'var(--space-6)',
-                  boxShadow: 'var(--shadow-md)',
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'all var(--transition-base)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>
@@ -137,10 +145,18 @@ export default function Home() {
               <div
                 style={{
                   background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-lg)',
                   padding: 'var(--space-6)',
-                  boxShadow: 'var(--shadow-md)',
+                  boxShadow: 'var(--shadow-card)',
+                  transition: 'all var(--transition-base)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>
@@ -154,11 +170,19 @@ export default function Home() {
             <div
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-lg)',
                 padding: 'var(--space-6)',
-                boxShadow: 'var(--shadow-md)',
+                boxShadow: 'var(--shadow-card)',
                 marginBottom: 'var(--space-8)',
+                transition: 'all var(--transition-base)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>
@@ -171,11 +195,19 @@ export default function Home() {
             <div
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-lg)',
                 padding: 'var(--space-6)',
-                boxShadow: 'var(--shadow-md)',
+                boxShadow: 'var(--shadow-card)',
                 marginBottom: 'var(--space-8)',
+                transition: 'all var(--transition-base)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>
@@ -193,11 +225,19 @@ export default function Home() {
             <div
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-lg)',
                 padding: 'var(--space-6)',
-                boxShadow: 'var(--shadow-md)',
+                boxShadow: 'var(--shadow-card)',
                 marginBottom: 'var(--space-8)',
+                transition: 'all var(--transition-base)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <CalendarHeatmap
@@ -211,10 +251,18 @@ export default function Home() {
             <div
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-lg)',
                 padding: 'var(--space-6)',
-                boxShadow: 'var(--shadow-md)',
+                boxShadow: 'var(--shadow-card)',
+                transition: 'all var(--transition-base)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>

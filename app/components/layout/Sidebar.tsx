@@ -39,7 +39,7 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
         display: 'flex',
         flexDirection: 'column',
         zIndex: 200,
-        borderRight: '1px solid var(--border)',
+        boxShadow: '2px 0 12px rgba(0, 0, 0, 0.08)',
       }}
     >
       {/* Logo */}

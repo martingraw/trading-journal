@@ -31,15 +31,22 @@ export default function StatCard({ label, value, subValue, color = 'neutral', to
     <div
       style={{
         background: 'var(--bg-card)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-md)',
+        borderRadius: 'var(--radius-lg)',
         padding: 'var(--space-6)',
-        boxShadow: 'var(--shadow-md)',
+        boxShadow: 'var(--shadow-card)',
         position: 'relative',
         transition: 'all var(--transition-base)',
       }}
-      onMouseEnter={() => tooltip && setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      onMouseEnter={(e) => {
+        if (tooltip) setShowTooltip(true);
+        e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={(e) => {
+        setShowTooltip(false);
+        e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
     >
       {/* Tooltip */}
       {tooltip && showTooltip && (
