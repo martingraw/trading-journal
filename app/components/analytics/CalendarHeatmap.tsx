@@ -63,17 +63,9 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
     }
   };
 
-  // Get heat color based on P&L - consistent colors for wins/losses
+  // Get heat color based on P&L - no background color, just default
   const getHeatColor = (pnl: number): string => {
-    if (pnl === 0) return 'var(--bg-elevated)';
-    
-    // Single consistent color for all winning days - darker teal/green
-    if (pnl > 0) {
-      return 'rgba(16, 95, 89, 0.6)'; // Dark teal green
-    } else {
-      // Single consistent color for all losing days - dark burgundy/maroon
-      return 'rgba(95, 33, 49, 0.8)'; // Dark burgundy
-    }
+    return 'var(--bg-elevated)';
   };
 
   // Build calendar grid
@@ -182,9 +174,8 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
               style={{
                 fontSize: 'var(--text-xs)',
                 fontWeight: 'var(--font-bold)',
-                color: stats.pnl >= 0 ? '#000000' : '#ffffff',
+                color: stats.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
                 marginBottom: 'var(--space-1)',
-                textShadow: stats.pnl >= 0 ? 'none' : '0 1px 2px rgba(0, 0, 0, 0.5)',
               }}
             >
               {formatCurrency(stats.pnl, 0)}
@@ -193,7 +184,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
               className="body-small"
               style={{
                 fontSize: '10px',
-                color: stats.pnl >= 0 ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.9)',
+                color: 'var(--text-secondary)',
                 fontWeight: 'var(--font-medium)',
               }}
             >
