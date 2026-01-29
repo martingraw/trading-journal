@@ -191,8 +191,9 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
               style={{
                 fontSize: 'var(--text-xs)',
                 fontWeight: 'var(--font-bold)',
-                color: stats.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
+                color: stats.pnl >= 0 ? '#000000' : '#ffffff',
                 marginBottom: 'var(--space-1)',
+                textShadow: stats.pnl >= 0 ? 'none' : '0 1px 2px rgba(0, 0, 0, 0.5)',
               }}
             >
               {formatCurrency(stats.pnl, 0)}
@@ -201,7 +202,8 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
               className="body-small"
               style={{
                 fontSize: '10px',
-                color: 'var(--text-secondary)',
+                color: stats.pnl >= 0 ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.9)',
+                fontWeight: 'var(--font-medium)',
               }}
             >
               {stats.trades} trade{stats.trades !== 1 ? 's' : ''}
