@@ -63,9 +63,17 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
     }
   };
 
-  // Get heat color based on P&L - no background color, just default
+  // Get heat color based on P&L - subtle background colors
   const getHeatColor = (pnl: number): string => {
-    return 'var(--bg-elevated)';
+    if (pnl === 0) return 'var(--bg-elevated)';
+    
+    // Green for wins: #a5f28b at 13% opacity
+    if (pnl > 0) {
+      return 'rgba(165, 242, 139, 0.13)';
+    } else {
+      // Red for losses: #ff8686 at 20% opacity
+      return 'rgba(255, 134, 134, 0.20)';
+    }
   };
 
   // Build calendar grid
