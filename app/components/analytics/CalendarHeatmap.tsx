@@ -331,7 +331,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
             style={{
               width: '12px',
               height: '12px',
-              background: 'rgba(255, 82, 82, 0.6)',
+              background: 'var(--accent-red)',
               borderRadius: 'var(--radius-base)',
             }}
           />
@@ -358,7 +358,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
             style={{
               width: '12px',
               height: '12px',
-              background: 'rgba(0, 212, 170, 0.6)',
+              background: 'var(--accent-green)',
               borderRadius: 'var(--radius-base)',
             }}
           />

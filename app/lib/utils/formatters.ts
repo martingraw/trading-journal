@@ -6,7 +6,7 @@
  */
 export const formatCurrency = (value: number | string, decimals: number = 2): string => {
   const num = parseFloat(value as string) || 0;
-  const sign = num >= 0 ? '+' : '';
+  const sign = num >= 0 ? '+' : '-';
   const formatted = Math.abs(num).toFixed(decimals);
 
   // Add comma separators
