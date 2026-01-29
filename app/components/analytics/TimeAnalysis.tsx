@@ -63,9 +63,10 @@ export default function TimeAnalysis({
             fontSize: '48px',
             marginBottom: 'var(--space-4)',
             textAlign: 'center',
+            color: 'var(--accent-yellow)',
           }}
         >
-          🌅
+          <i className="fas fa-sun" />
         </div>
 
         {/* Label */}
@@ -159,9 +160,10 @@ export default function TimeAnalysis({
             fontSize: '48px',
             marginBottom: 'var(--space-4)',
             textAlign: 'center',
+            color: 'var(--accent-purple)',
           }}
         >
-          🌇
+          <i className="fas fa-moon" />
         </div>
 
         {/* Label */}

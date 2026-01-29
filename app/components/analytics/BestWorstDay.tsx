@@ -54,7 +54,7 @@ export default function BestWorstDay({ bestDay, worstDay }: BestWorstDayProps) {
             gap: 'var(--space-2)',
           }}
         >
-          <span style={{ fontSize: '24px' }}>🏆</span>
+          <i className="fas fa-trophy" style={{ fontSize: 'var(--text-lg)', color: 'var(--accent-green)' }} />
           <span>Best Day</span>
         </div>
 
@@ -129,7 +129,7 @@ export default function BestWorstDay({ bestDay, worstDay }: BestWorstDayProps) {
             gap: 'var(--space-2)',
           }}
         >
-          <span style={{ fontSize: '24px' }}>⚠️</span>
+          <i className="fas fa-exclamation-triangle" style={{ fontSize: 'var(--text-lg)', color: 'var(--accent-red)' }} />
           <span>Worst Day</span>
         </div>
 

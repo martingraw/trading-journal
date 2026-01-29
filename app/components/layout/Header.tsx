@@ -50,9 +50,13 @@ export default function Header({
                   borderRadius: 'var(--radius-full)',
                 }}
               >
-                <span style={{ fontSize: 'var(--text-md)' }}>
-                  {streakType === 'win' ? '🔥' : '❄️'}
-                </span>
+                <i 
+                  className={`fas ${streakType === 'win' ? 'fa-fire' : 'fa-snowflake'}`}
+                  style={{ 
+                    fontSize: 'var(--text-md)',
+                    color: streakType === 'win' ? 'var(--accent-green)' : 'var(--accent-red)',
+                  }}
+                />
                 <span
                   style={{
                     fontSize: 'var(--text-sm)',
