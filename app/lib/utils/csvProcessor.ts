@@ -103,8 +103,30 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
     }
 
     if (side === 'Buy') {
-      // Opening a long position
-      openPositions[symbol].push({ type: 'long', price, qty, time });
+      // Check if we have an open short position to close
+      if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'short') {
+        const entry = openPositions[symbol].shift();
+        const tickValue = getTickValue(symbol);
+        const pnl = (entry.price - price) * tickValue * qty;
+
+        trades.push({
+          id: `${entry.time}-${time}`,
+          symbol,
+          direction: 'Short',
+          entryPrice: entry.price,
+          exitPrice: price,
+          entryTime: entry.time,
+          exitTime: time,
+          qty,
+          pnl,
+          pnlTicks: (entry.price - price) * 4, // Convert to ticks
+          notes: '',
+          tags: [],
+        });
+      } else {
+        // Opening a long position
+        openPositions[symbol].push({ type: 'long', price, qty, time });
+      }
     } else if (side === 'Sell') {
       // Check if we have an open long position to close
       if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'long') {
