@@ -101,7 +101,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
         style={{
           padding: 'var(--space-2)',
           background: hasTrades ? getHeatColor(stats.pnl) : 'var(--bg-elevated)',
-          border: isSelected ? '2px solid var(--accent-blue)' : isToday ? '2px solid var(--border-highlight)' : '1px solid var(--border)',
+          border: isSelected ? '2px solid var(--accent-blue)' : isToday ? '2px solid var(--accent-blue)' : '1px solid var(--border)',
           borderRadius: 'var(--radius-base)',
           cursor: hasTrades ? 'pointer' : 'default',
           transition: 'all var(--transition-fast)',
