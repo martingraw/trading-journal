@@ -185,6 +185,7 @@ export const STORAGE_KEYS = {
   DAILY_NOTES: 'tradingJournal_dailyNotes',
   ONBOARDING_COMPLETED: 'tradingJournal_onboarding_completed',
   WELCOME_DISMISSED: 'tradingJournal_welcome_dismissed',
+  WIDGET_ORDER: 'tradingJournal_widgetOrder',
 } as const;
 
 // ============ API ENDPOINTS ============
@@ -211,6 +212,16 @@ export const DEFAULT_FILTERS = {
   maxPnl: '',
   tag: '',
 };
+
+// Default dashboard widget order
+export const DEFAULT_WIDGET_ORDER = [
+  'stats',
+  'charts',
+  'performance',
+  'time-analysis',
+  'calendar',
+  'tags',
+];
 
 // ============ UI CONSTANTS ============
 
