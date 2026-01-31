@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { getLineChartOptions, getChartTheme } from '@/app/lib/charts/chartConfig';
-import { formatCurrency, formatDate } from '@/app/lib/utils/formatters';
+import { formatCurrency, formatDateShort } from '@/app/lib/utils/formatters';
 import { Trade } from '@/app/lib/types';
 import { getCumulativePnL } from '@/app/lib/utils/tradeCalculations';
 
@@ -30,7 +30,7 @@ export default function PnLChart({ trades }: PnLChartProps) {
   const isPositive = cumulativeData.length > 0 && cumulativeData[cumulativeData.length - 1].cumulativePnL >= 0;
 
   const data = {
-    labels: cumulativeData.map((d) => formatDate(d.date)),
+    labels: cumulativeData.map((d) => formatDateShort(d.date)),
     datasets: [
       {
         label: 'Cumulative P&L',

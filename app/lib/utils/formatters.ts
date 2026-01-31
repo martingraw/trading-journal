@@ -31,6 +31,19 @@ export const formatDate = (dateStr: string): string => {
 };
 
 /**
+ * Format a date string to short format for charts
+ * @param dateStr - ISO date string
+ * @returns Formatted date (e.g., "Jan 26")
+ */
+export const formatDateShort = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+/**
  * Format a date string to time only
  * @param dateStr - ISO date string
  * @returns Formatted time (e.g., "02:30 PM")
