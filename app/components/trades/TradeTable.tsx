@@ -10,6 +10,16 @@ interface TradeTableProps {
 }
 
 export default function TradeTable({ trades, onUpdate, onDelete }: TradeTableProps) {
+  // Group trades by date for alternating backgrounds
+  const getTradeDate = (trade: Trade) => trade.exitTime.split(' ')[0];
+  
+  // Create a map of dates to determine alternating colors
+  const uniqueDates = Array.from(new Set(trades.map(getTradeDate)));
+  const dateColorMap: Record<string, boolean> = {};
+  uniqueDates.forEach((date, index) => {
+    dateColorMap[date] = index % 2 === 0;
+  });
+
   if (trades.length === 0) {
     return (
       <div
@@ -166,9 +176,19 @@ export default function TradeTable({ trades, onUpdate, onDelete }: TradeTablePro
           </tr>
         </thead>
         <tbody>
-          {trades.map((trade) => (
-            <TradeRow key={trade.id} trade={trade} onUpdate={onUpdate} onDelete={onDelete} />
-          ))}
+          {trades.map((trade) => {
+            const tradeDate = getTradeDate(trade);
+            const isEvenDate = dateColorMap[tradeDate];
+            return (
+              <TradeRow 
+                key={trade.id} 
+                trade={trade} 
+                onUpdate={onUpdate} 
+                onDelete={onDelete}
+                isEvenDate={isEvenDate}
+              />
+            );
+          })}
         </tbody>
       </table>
     </div>

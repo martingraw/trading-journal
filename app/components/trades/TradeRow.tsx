@@ -9,9 +9,10 @@ interface TradeRowProps {
   trade: Trade;
   onUpdate: (id: string, updates: Partial<Trade>) => void;
   onDelete: (id: string) => void;
+  isEvenDate?: boolean;
 }
 
-export default function TradeRow({ trade, onUpdate, onDelete }: TradeRowProps) {
+export default function TradeRow({ trade, onUpdate, onDelete, isEvenDate = false }: TradeRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(trade.notes);
@@ -53,12 +54,13 @@ export default function TradeRow({ trade, onUpdate, onDelete }: TradeRowProps) {
           cursor: 'pointer',
           borderBottom: isExpanded ? 'none' : '1px solid var(--border)',
           transition: 'background var(--transition-fast)',
+          background: isEvenDate ? 'rgba(59, 130, 246, 0.03)' : 'transparent',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.background = 'var(--bg-hover)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.background = isEvenDate ? 'rgba(59, 130, 246, 0.03)' : 'transparent';
         }}
       >
         {/* Expand Icon */}
