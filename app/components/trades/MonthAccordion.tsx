@@ -131,7 +131,14 @@ export default function MonthAccordion({
       </div>
 
       {/* Trades Table (Collapsible) */}
-      {isExpanded && (
+      <div
+        style={{
+          maxHeight: isExpanded ? '10000px' : '0',
+          overflow: 'hidden',
+          transition: 'max-height 0.3s ease-in-out, opacity 0.3s ease-in-out',
+          opacity: isExpanded ? 1 : 0,
+        }}
+      >
         <div
           style={{
             marginTop: 'var(--space-2)',
@@ -279,7 +286,7 @@ export default function MonthAccordion({
             </tbody>
           </table>
         </div>
-      )}
+      </div>
     </div>
   );
 }
