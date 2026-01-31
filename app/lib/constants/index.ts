@@ -217,10 +217,10 @@ export const DEFAULT_FILTERS = {
 export const DEFAULT_WIDGET_ORDER = [
   'stats',
   'charts',
-  'performance',
-  'time-analysis',
   'calendar',
+  'performance',
   'tags',
+  'time-analysis',
 ];
 
 // ============ UI CONSTANTS ============

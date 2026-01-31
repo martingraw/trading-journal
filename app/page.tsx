@@ -51,7 +51,15 @@ export default function Home() {
             gap: 'var(--space-6)',
           }}
         >
-          <div>
+          {/* Win Rate Chart */}
+          <div
+            style={{
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-base)',
+              padding: 'var(--space-5)',
+              border: '1px solid var(--border)',
+            }}
+          >
             <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>
               Win Rate Distribution
             </h3>
@@ -97,7 +105,16 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div>
+
+          {/* Cumulative P&L Chart */}
+          <div
+            style={{
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-base)',
+              padding: 'var(--space-5)',
+              border: '1px solid var(--border)',
+            }}
+          >
             <h3 className="heading-4" style={{ marginBottom: 'var(--space-6)' }}>
               Cumulative P&L
             </h3>
