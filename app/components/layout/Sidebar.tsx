@@ -128,40 +128,58 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
             <span>{item.label}</span>
           </Link>
         ))}
+
+        {/* Settings Button (moved above divider, with spacing) */}
+        <div style={{ marginTop: 'var(--space-8)' }}>
+          <button
+            onClick={onSettingsClick}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+              padding: 'var(--space-3) var(--space-4)',
+              background: 'transparent',
+              border: 'none',
+              borderRadius: 'var(--radius-base)',
+              cursor: 'pointer',
+              transition: 'all var(--transition-base)',
+              width: '100%',
+              color: 'var(--text-secondary)',
+              fontSize: 'var(--text-base)',
+              fontWeight: 'var(--font-medium)',
+              textAlign: 'left',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--bg-tertiary)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
+          >
+            <i className="fas fa-cog" style={{ width: '20px', textAlign: 'center' }} />
+            <span>Settings</span>
+          </button>
+        </div>
       </div>
 
-      {/* Settings Button */}
+      {/* Copyright Footer */}
       <div style={{ padding: 'var(--space-4)', borderTop: '1px solid var(--border)' }}>
-        <button
-          onClick={onSettingsClick}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-3)',
-            padding: 'var(--space-3) var(--space-4)',
-            background: 'transparent',
-            border: 'none',
-            borderRadius: 'var(--radius-base)',
-            cursor: 'pointer',
-            transition: 'all var(--transition-base)',
-            width: '100%',
-            color: 'var(--text-secondary)',
-            fontSize: 'var(--text-base)',
-            fontWeight: 'var(--font-medium)',
-            textAlign: 'left',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--bg-tertiary)';
-            e.currentTarget.style.color = 'var(--text-primary)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = 'var(--text-secondary)';
-          }}
-        >
-          <i className="fas fa-cog" style={{ width: '20px', textAlign: 'center' }} />
-          <span>Settings</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          <img
+            src="/scarekrow.png"
+            alt="ScareKrow"
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: 'var(--radius-base)',
+            }}
+          />
+          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>
+            © {new Date().getFullYear()} ScareKrow, Inc.
+          </div>
+        </div>
       </div>
     </div>
   );
