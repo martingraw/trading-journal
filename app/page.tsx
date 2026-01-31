@@ -237,7 +237,7 @@ export default function Home() {
                 onClick: () => router.push('/upload'),
                 icon: 'fa-upload',
               }}
-              helpText="Export your CSV from TradingView → Paper Trading → List of Trades → Export button"
+              helpText="Export your CSV from TradingView → Trading Panel → Broker's dropdown menu → Export data..."
             />
           ) : (
             <EmptyStateCard
