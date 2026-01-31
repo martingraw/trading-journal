@@ -15,7 +15,7 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
   const menuItems = [
     { id: 'dashboard', href: '/', icon: 'fa-chart-line', label: 'Dashboard' },
     { id: 'trades', href: '/trades', icon: 'fa-list', label: 'Trade Log' },
-    { id: 'upload', href: '/upload', icon: 'fa-plus-circle', label: 'Add Trades' },
+    { id: 'upload', href: '/upload', icon: 'fa-plus', label: 'Add Trades' },
   ];
 
   const getActiveTab = () => {
