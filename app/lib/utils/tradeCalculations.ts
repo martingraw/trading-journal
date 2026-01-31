@@ -252,7 +252,7 @@ export const calculateTagStats = (trades: Trade[]): TagStats => {
 };
 
 /**
- * Get cumulative P&L data for chart
+ * Get cumulative P&L data for chart (one point per day)
  * @param trades - Array of trades (should be sorted by date)
  * @returns Array of { date, cumulativePnL }
  */
@@ -263,14 +263,23 @@ export const getCumulativePnL = (
     (a, b) => new Date(a.exitTime).getTime() - new Date(b.exitTime).getTime()
   );
 
+  // Group by day and calculate cumulative P&L at end of each day
+  const dailyData: Record<string, number> = {};
   let cumulative = 0;
-  return sortedTrades.map((trade) => {
+  
+  sortedTrades.forEach((trade) => {
     cumulative += trade.pnl;
-    return {
-      date: trade.exitTime,
-      cumulativePnL: cumulative,
-    };
+    const day = trade.exitTime.split(' ')[0]; // Get YYYY-MM-DD
+    dailyData[day] = cumulative; // Keep only the last cumulative value for each day
   });
+
+  // Convert to array format
+  return Object.entries(dailyData)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, cumulativePnL]) => ({
+      date,
+      cumulativePnL,
+    }));
 };
 
 /**
