@@ -150,6 +150,7 @@ export default function TradeRow({ trade, onUpdate, onDelete, isEvenDate = false
                       borderRadius: 'var(--radius-base)',
                       fontSize: '10px',
                       fontWeight: 'var(--font-semibold)',
+                      textTransform: 'uppercase',
                     }}
                   >
                     {tag}

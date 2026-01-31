@@ -141,7 +141,7 @@ export default function TagPerformance({ tagStats, onTagClick }: TagPerformanceP
                       flexShrink: 0,
                     }}
                   />
-                  <span className="body" style={{ fontWeight: 'var(--font-medium)' }}>
+                  <span className="body" style={{ fontWeight: 'var(--font-medium)', textTransform: 'uppercase' }}>
                     {stat.tag}
                   </span>
                 </div>
