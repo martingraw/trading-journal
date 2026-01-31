@@ -1,7 +1,7 @@
 'use client';
 
 import { Trade } from '@/app/lib/types';
-import TradeRow from './TradeRow';
+import MonthAccordion from './MonthAccordion';
 
 interface TradeTableProps {
   trades: Trade[];
@@ -10,16 +10,6 @@ interface TradeTableProps {
 }
 
 export default function TradeTable({ trades, onUpdate, onDelete }: TradeTableProps) {
-  // Group trades by date for alternating backgrounds
-  const getTradeDate = (trade: Trade) => trade.exitTime.split(' ')[0];
-  
-  // Create a map of dates to determine alternating colors
-  const uniqueDates = Array.from(new Set(trades.map(getTradeDate)));
-  const dateColorMap: Record<string, boolean> = {};
-  uniqueDates.forEach((date, index) => {
-    dateColorMap[date] = index % 2 === 0;
-  });
-
   if (trades.length === 0) {
     return (
       <div
@@ -45,152 +35,45 @@ export default function TradeTable({ trades, onUpdate, onDelete }: TradeTablePro
     );
   }
 
+  // Group trades by month
+  const tradesByMonth: Record<string, Trade[]> = {};
+  
+  trades.forEach((trade) => {
+    const date = new Date(trade.exitTime);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const monthLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    
+    if (!tradesByMonth[monthKey]) {
+      tradesByMonth[monthKey] = [];
+    }
+    tradesByMonth[monthKey].push(trade);
+  });
+
+  // Sort months in reverse chronological order (newest first)
+  const sortedMonths = Object.keys(tradesByMonth).sort((a, b) => b.localeCompare(a));
+
+  // Get current month key to expand it by default
+  const currentDate = new Date();
+  const currentMonthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+
   return (
-    <div
-      style={{
-        background: 'var(--bg-card)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow-md)',
-        overflowX: 'auto',
-      }}
-    >
-      <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-        }}
-      >
-        <thead>
-          <tr
-            style={{
-              background: 'var(--bg-elevated)',
-              borderBottom: '2px solid var(--border)',
-            }}
-          >
-            <th style={{ width: '40px' }} />
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Date / Time
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Symbol
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Direction
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Entry
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Exit
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'center',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Qty
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'right',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              P&L
-            </th>
-            <th
-              className="body-small"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-4) var(--space-3)',
-                color: 'var(--text-secondary)',
-                fontWeight: 'var(--font-semibold)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Tags
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {trades.map((trade) => {
-            const tradeDate = getTradeDate(trade);
-            const isEvenDate = dateColorMap[tradeDate];
-            return (
-              <TradeRow 
-                key={trade.id} 
-                trade={trade} 
-                onUpdate={onUpdate} 
-                onDelete={onDelete}
-                isEvenDate={isEvenDate}
-              />
-            );
-          })}
-        </tbody>
-      </table>
+    <div>
+      {sortedMonths.map((monthKey) => {
+        const monthTrades = tradesByMonth[monthKey];
+        const date = new Date(monthTrades[0].exitTime);
+        const monthLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        return (
+          <MonthAccordion
+            key={monthKey}
+            month={monthLabel}
+            trades={monthTrades}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
+            isDefaultExpanded={monthKey === currentMonthKey}
+          />
+        );
+      })}
     </div>
   );
 }
