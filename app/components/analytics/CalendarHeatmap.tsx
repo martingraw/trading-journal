@@ -142,7 +142,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
           >
             {day}
           </div>
-          {/* Pencil Icon for Daily Notes */}
+          {/* Note Icon - Changes based on whether note exists */}
           <button
             onClick={(e) => openNoteModal(dateStr, e)}
             style={{
@@ -167,7 +167,7 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
             }}
             title={mounted && dailyNotes[dateStr] ? 'Edit note' : 'Add note'}
           >
-            <i className="fas fa-pencil-alt" />
+            <i className={mounted && dailyNotes[dateStr] ? 'fas fa-comment-dots' : 'fas fa-pencil-alt'} />
           </button>
         </div>
 
