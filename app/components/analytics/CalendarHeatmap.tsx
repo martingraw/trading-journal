@@ -203,6 +203,25 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
 
   const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
+  // Calculate monthly stats
+  const monthlyStats = Object.entries(tradesByDay).reduce(
+    (acc, [dateStr, stats]) => {
+      const tradeDate = new Date(dateStr + 'T12:00:00');
+      if (tradeDate.getFullYear() === year && tradeDate.getMonth() === month) {
+        acc.totalPnL += stats.pnl;
+        acc.totalTrades += stats.trades;
+        acc.wins += stats.wins;
+        acc.losses += stats.losses;
+      }
+      return acc;
+    },
+    { totalPnL: 0, totalTrades: 0, wins: 0, losses: 0 }
+  );
+
+  const monthlyWinRate = monthlyStats.totalTrades > 0 
+    ? (monthlyStats.wins / monthlyStats.totalTrades) * 100 
+    : 0;
+
   return (
     <div>
       {/* Header with Navigation */}
@@ -215,6 +234,69 @@ export default function CalendarHeatmap({ tradesByDay, selectedDate, onDateClick
         }}
       >
         <h3 className="heading-4">{monthName}</h3>
+
+        {/* Monthly Stats - Center */}
+        {monthlyStats.totalTrades > 0 && (
+          <div
+            style={{
+              display: 'flex',
+              gap: 'var(--space-6)',
+              alignItems: 'center',
+              padding: 'var(--space-3) var(--space-5)',
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-base)',
+              border: '1px solid var(--border)',
+            }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <div className="label" style={{ marginBottom: 'var(--space-1)', fontSize: '10px' }}>
+                Total P&L
+              </div>
+              <div
+                className="mono"
+                style={{
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 'var(--font-bold)',
+                  color: monthlyStats.totalPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
+                }}
+              >
+                {formatCurrency(monthlyStats.totalPnL)}
+              </div>
+            </div>
+            <div style={{ width: '1px', height: '30px', background: 'var(--border)' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div className="label" style={{ marginBottom: 'var(--space-1)', fontSize: '10px' }}>
+                Win Rate
+              </div>
+              <div
+                className="mono"
+                style={{
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 'var(--font-bold)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {monthlyWinRate.toFixed(1)}%
+              </div>
+            </div>
+            <div style={{ width: '1px', height: '30px', background: 'var(--border)' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div className="label" style={{ marginBottom: 'var(--space-1)', fontSize: '10px' }}>
+                Trades
+              </div>
+              <div
+                className="mono"
+                style={{
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 'var(--font-bold)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {monthlyStats.totalTrades}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
           <button
