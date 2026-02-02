@@ -20,6 +20,7 @@ export const getTickValue = (symbol: string): number => {
   if (normalizedSymbol.includes('MNQ')) return TICK_VALUES.MNQ;
   if (normalizedSymbol.includes('MYM')) return TICK_VALUES.MYM;
   if (normalizedSymbol.includes('M2K')) return TICK_VALUES.M2K;
+  if (normalizedSymbol.includes('M1OZ')) return TICK_VALUES.M1OZ;
   if (normalizedSymbol.includes('MGC')) return TICK_VALUES.MGC;
   if (normalizedSymbol.includes('MCL')) return TICK_VALUES.MCL;
   if (normalizedSymbol.includes('MHG')) return TICK_VALUES.MHG;
