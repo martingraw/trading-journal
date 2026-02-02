@@ -45,6 +45,7 @@ export const getTickValue = (symbol: string): number => {
   if (normalizedSymbol.includes('NQ') && !normalizedSymbol.includes('MNQ')) return TICK_VALUES.NQ;
   if (normalizedSymbol.includes('YM') && !normalizedSymbol.includes('MYM')) return TICK_VALUES.YM;
   if (normalizedSymbol.includes('RTY')) return TICK_VALUES.RTY;
+  if (normalizedSymbol.includes('1OZ') && !normalizedSymbol.includes('M1OZ')) return TICK_VALUES['1OZ'];
   if (normalizedSymbol.includes('GC') && !normalizedSymbol.includes('MGC')) return TICK_VALUES.GC;
   if (normalizedSymbol.includes('CL') && !normalizedSymbol.includes('MCL')) return TICK_VALUES.CL;
   if (normalizedSymbol.includes('NG') && !normalizedSymbol.includes('MNG')) return TICK_VALUES.NG;
@@ -59,6 +60,8 @@ export const getTickValue = (symbol: string): number => {
   if (normalizedSymbol.includes('ZB')) return TICK_VALUES.ZB;
   if (normalizedSymbol.includes('ZF')) return TICK_VALUES.ZF;
   if (normalizedSymbol.includes('ZT')) return TICK_VALUES.ZT;
+  if (normalizedSymbol.includes('UB')) return TICK_VALUES.UB;
+  if (normalizedSymbol.includes('TN')) return TICK_VALUES.TN;
   
   // Default to MES if no match found
   return TICK_VALUES.MES;
