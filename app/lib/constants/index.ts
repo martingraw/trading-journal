@@ -9,6 +9,7 @@ export const PRESET_TAGS: PresetTag[] = [
   { label: 'Scalp', color: '#ffcc00' },
   { label: 'Swing', color: '#ff8844' },
   { label: 'First Candle Rule', color: '#00d4aa' },
+  { label: 'OTE', color: '#4488ff' },
   { label: 'FOMO', color: '#ff4466' },
   { label: 'Revenge', color: '#ff4466' },
   { label: 'A+ Setup', color: '#00d4aa' },
