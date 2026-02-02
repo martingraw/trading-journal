@@ -69,15 +69,19 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
     // "F.US.MNQH26" → "MNQ"
     // "F.US.MESH26" → "MES"
     // "F.US.MGCG26" → "MGC"
+    // "F.US.M1OZJ26" → "M1OZ"
     if (symbol.includes('.')) {
       const parts = symbol.split('.');
       symbol = parts[parts.length - 1]; // Get last part after dots
     }
     
-    // Remove contract month codes (H26, G26, etc.) - last 3 characters if they match pattern
+    // Remove contract month codes (H26, G26, J26, etc.) - last 3 characters if they match pattern
+    // BUT preserve symbols like M1OZ (don't remove the "J26" part incorrectly)
     if (symbol.length > 3 && /[A-Z]\d{2}$/.test(symbol)) {
       symbol = symbol.slice(0, -3);
     }
+    
+    console.log('Processed symbol:', symbol, 'from original:', row.Symbol);
     
     const side = row.Side;
     const qty = parseInt(row['Fill Qty']) || parseInt(row.Qty) || 1;
