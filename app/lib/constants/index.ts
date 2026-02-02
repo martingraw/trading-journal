@@ -94,9 +94,9 @@ export const TICK_VALUES: Record<string, number> = {
   'GCE': 10,     // Gold (CQG): $10 per tick
   'QO': 12.5,    // E-mini Gold: $12.50 per tick
   'MQO': 12.5,   // E-mini Gold (CQG): $12.50 per tick
-  'MGC': 1,      // Micro Gold: $1 per tick
-  '1OZ': 0.1,    // 1-Ounce Gold: $0.10 per tick
-  'M1OZ': 0.1,   // 1-Ounce Gold (CQG): $0.10 per tick
+  'MGC': 1,      // Micro Gold: $1 per tick (0.10 move)
+  '1OZ': 1,      // 1-Ounce Gold: $1 per tick (0.10 move = $1)
+  'M1OZ': 1,     // 1-Ounce Gold (CQG): $1 per tick (0.10 move = $1)
   'HG': 25,      // Copper: $25 per tick (0.0005 = $12.50)
   'CPE': 25,     // Copper (CQG): $25 per tick
   'QC': 12.5,    // E-mini Copper: $12.50 per tick

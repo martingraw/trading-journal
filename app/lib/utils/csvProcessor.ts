@@ -81,7 +81,8 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
       symbol = symbol.slice(0, -3);
     }
     
-    console.log('Processed symbol:', symbol, 'from original:', row.Symbol);
+    const originalSymbol = row.Symbol;
+    console.log('Processed symbol:', symbol, 'from original:', originalSymbol, 'tick value:', getTickValue(symbol));
     
     const side = row.Side;
     const qty = parseInt(row['Fill Qty']) || parseInt(row.Qty) || 1;
