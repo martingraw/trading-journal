@@ -183,7 +183,7 @@ export default function Home() {
         onMoveUp={() => moveWidgetUp('tags')}
         onMoveDown={() => moveWidgetDown('tags')}
       >
-        <TagPerformance tagStats={tagStats} />
+        <TagPerformance tagStats={tagStats} trades={trades} />
       </DashboardWidget>
     ),
   };
