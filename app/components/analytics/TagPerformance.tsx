@@ -249,6 +249,19 @@ export default function TagPerformance({ tagStats, trades, onTagClick }: TagPerf
                 letterSpacing: '0.5px',
               }}
             >
+              Total P&L
+            </th>
+            <th
+              className="body-small"
+              style={{
+                textAlign: 'right',
+                padding: 'var(--space-3)',
+                color: 'var(--text-secondary)',
+                fontWeight: 'var(--font-semibold)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
               Avg P&L
             </th>
           </tr>
@@ -337,6 +350,20 @@ export default function TagPerformance({ tagStats, trades, onTagClick }: TagPerf
                 }}
               >
                 {stat.winRate.toFixed(1)}%
+              </td>
+
+              {/* Total P&L */}
+              <td
+                className="mono"
+                style={{
+                  padding: 'var(--space-4) var(--space-3)',
+                  textAlign: 'right',
+                  color: stat.totalPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
+                  fontWeight: 'var(--font-semibold)',
+                }}
+              >
+                {stat.totalPnL >= 0 ? '+' : ''}
+                {stat.totalPnL.toFixed(2)}
               </td>
 
               {/* Avg P&L */}
