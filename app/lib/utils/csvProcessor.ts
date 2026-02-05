@@ -9,26 +9,15 @@ import { getTickValue } from './tickValues';
  * @returns Processed trades with new ones merged in
  */
 export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[] => {
-  // Filter for filled orders only (Market and Limit types that actually executed)
-  const rows = csvData.filter((row: any) => {
+  // Get all filled orders
+  const allOrders = csvData.filter((row: any) => {
     const status = row.Status;
-    const type = row.Type;
     const fillQty = parseInt(row['Fill Qty']) || 0;
-
-    // Include Market, Limit, Stop Loss, Take Profit, and Stop orders that were filled
-    return (
-      status === 'Filled' &&
-      (type === 'Market' ||
-        type === 'Limit' ||
-        type === 'Stop Loss' ||
-        type === 'Take Profit' ||
-        type === 'Stop') &&
-      fillQty > 0
-    );
+    return status === 'Filled' && fillQty > 0;
   });
 
-  // Sort by Status Time chronologically
-  rows.sort((a: any, b: any) => {
+  // Sort ALL orders by Status Time chronologically
+  allOrders.sort((a: any, b: any) => {
     // Parse dates - handle both formats: M/D/YY H:MM and YYYY-MM-DD HH:MM:SS
     const parseDate = (dateStr: string) => {
       if (dateStr.includes('/')) {
@@ -50,7 +39,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
 
   console.log(
     'Processing filled orders:',
-    rows.map((r: any) => ({
+    allOrders.map((r: any) => ({
       side: r.Side,
       type: r.Type,
       price: r['Avg Fill Price'],
@@ -61,7 +50,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
   const trades: Trade[] = [];
   const openPositions: Record<string, any[]> = {};
 
-  rows.forEach((row: any) => {
+  allOrders.forEach((row: any) => {
     // Normalize symbol names - extract just the base symbol
     let symbol = row.Symbol || '';
     
@@ -85,6 +74,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
     console.log('Processed symbol:', symbol, 'from original:', originalSymbol, 'tick value:', getTickValue(symbol));
     
     const side = row.Side;
+    const orderType = row.Type;
     const qty = parseInt(row['Fill Qty']) || parseInt(row.Qty) || 1;
     const price = parseFloat(row['Avg Fill Price']);
     const timeStr = row['Status Time'];
@@ -107,6 +97,12 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
       openPositions[symbol] = [];
     }
 
+    // Determine if this is an entry or exit order based on order type
+    // Entry orders: Market, Stop (used to enter positions)
+    // Exit orders: Limit, Stop Loss, Take Profit (used to exit positions)
+    const isEntryOrder = orderType === 'Market' || orderType === 'Stop';
+    const isExitOrder = orderType === 'Limit' || orderType === 'Stop Loss' || orderType === 'Take Profit';
+
     if (side === 'Buy') {
       // Check if we have an open short position to close
       if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'short') {
@@ -128,9 +124,9 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           notes: '',
           tags: [],
         });
-      } else {
-        // Opening a long position
-        openPositions[symbol].push({ type: 'long', price, qty, time });
+      } else if (isEntryOrder) {
+        // Opening a long position (only if it's an entry order type)
+        openPositions[symbol].push({ type: 'long', price, qty, time, orderType });
       }
     } else if (side === 'Sell') {
       // Check if we have an open long position to close
@@ -153,9 +149,9 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           notes: '',
           tags: [],
         });
-      } else {
-        // Opening a short position
-        openPositions[symbol].push({ type: 'short', price, qty, time });
+      } else if (isEntryOrder) {
+        // Opening a short position (only if it's an entry order type)
+        openPositions[symbol].push({ type: 'short', price, qty, time, orderType });
       }
     }
   });
