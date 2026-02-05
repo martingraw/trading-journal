@@ -97,12 +97,6 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
       openPositions[symbol] = [];
     }
 
-    // Determine if this is an entry or exit order based on order type
-    // Entry orders: Market, Stop (used to enter positions)
-    // Exit orders: Limit, Stop Loss, Take Profit (used to exit positions)
-    const isEntryOrder = orderType === 'Market' || orderType === 'Stop';
-    const isExitOrder = orderType === 'Limit' || orderType === 'Stop Loss' || orderType === 'Take Profit';
-
     if (side === 'Buy') {
       // Check if we have an open short position to close
       if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'short') {
@@ -124,8 +118,8 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           notes: '',
           tags: [],
         });
-      } else if (isEntryOrder) {
-        // Opening a long position (only if it's an entry order type)
+      } else {
+        // Opening a long position
         openPositions[symbol].push({ type: 'long', price, qty, time, orderType });
       }
     } else if (side === 'Sell') {
@@ -149,8 +143,8 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           notes: '',
           tags: [],
         });
-      } else if (isEntryOrder) {
-        // Opening a short position (only if it's an entry order type)
+      } else {
+        // Opening a short position
         openPositions[symbol].push({ type: 'short', price, qty, time, orderType });
       }
     }
