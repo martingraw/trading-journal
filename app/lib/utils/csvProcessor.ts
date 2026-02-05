@@ -102,7 +102,8 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
       if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'short') {
         const entry = openPositions[symbol].shift();
         const tickValue = getTickValue(symbol);
-        const pnl = (entry.price - price) * tickValue * qty;
+        const priceDiff = entry.price - price;
+        const pnl = priceDiff * tickValue * 10000; // Multiply by 10000 for forex (0.0001 = 1 pip)
 
         trades.push({
           id: `${entry.time}-${time}`,
@@ -114,7 +115,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           exitTime: time,
           qty,
           pnl,
-          pnlTicks: (entry.price - price) * 4, // Convert to ticks
+          pnlTicks: priceDiff * 10000, // Convert to pips for forex
           notes: '',
           tags: [],
         });
@@ -127,7 +128,8 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
       if (openPositions[symbol].length > 0 && openPositions[symbol][0].type === 'long') {
         const entry = openPositions[symbol].shift();
         const tickValue = getTickValue(symbol);
-        const pnl = (price - entry.price) * tickValue * qty;
+        const priceDiff = price - entry.price;
+        const pnl = priceDiff * tickValue * 10000; // Multiply by 10000 for forex (0.0001 = 1 pip)
 
         trades.push({
           id: `${entry.time}-${time}`,
@@ -139,7 +141,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           exitTime: time,
           qty,
           pnl,
-          pnlTicks: (price - entry.price) * 4, // Convert to ticks
+          pnlTicks: priceDiff * 10000, // Convert to pips for forex
           notes: '',
           tags: [],
         });
