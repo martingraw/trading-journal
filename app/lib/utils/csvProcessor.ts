@@ -106,7 +106,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
         
         // Check if this is a forex pair (M6E, M6A, M6B, etc.) - prices are in decimal format like 1.1829
         const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF');
-        const pnl = isForex ? priceDiff * tickValue * 10000 : priceDiff * tickValue;
+        const pnl = isForex ? priceDiff * tickValue * 10000 * qty : priceDiff * tickValue * qty;
 
         trades.push({
           id: `${entry.time}-${time}`,
@@ -135,7 +135,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
         
         // Check if this is a forex pair (M6E, M6A, M6B, etc.) - prices are in decimal format like 1.1829
         const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF');
-        const pnl = isForex ? priceDiff * tickValue * 10000 : priceDiff * tickValue;
+        const pnl = isForex ? priceDiff * tickValue * 10000 * qty : priceDiff * tickValue * qty;
 
         trades.push({
           id: `${entry.time}-${time}`,
