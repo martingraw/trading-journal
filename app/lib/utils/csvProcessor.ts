@@ -103,7 +103,10 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
         const entry = openPositions[symbol].shift();
         const tickValue = getTickValue(symbol);
         const priceDiff = entry.price - price;
-        const pnl = priceDiff * tickValue * 10000; // Multiply by 10000 for forex (0.0001 = 1 pip)
+        
+        // Check if this is a forex pair (M6E, M6A, M6B, etc.) - prices are in decimal format like 1.1829
+        const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF');
+        const pnl = isForex ? priceDiff * tickValue * 10000 : priceDiff * tickValue;
 
         trades.push({
           id: `${entry.time}-${time}`,
@@ -115,7 +118,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           exitTime: time,
           qty,
           pnl,
-          pnlTicks: priceDiff * 10000, // Convert to pips for forex
+          pnlTicks: isForex ? priceDiff * 10000 : priceDiff * 4, // Convert to pips for forex, ticks for futures
           notes: '',
           tags: [],
         });
@@ -129,7 +132,10 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
         const entry = openPositions[symbol].shift();
         const tickValue = getTickValue(symbol);
         const priceDiff = price - entry.price;
-        const pnl = priceDiff * tickValue * 10000; // Multiply by 10000 for forex (0.0001 = 1 pip)
+        
+        // Check if this is a forex pair (M6E, M6A, M6B, etc.) - prices are in decimal format like 1.1829
+        const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF');
+        const pnl = isForex ? priceDiff * tickValue * 10000 : priceDiff * tickValue;
 
         trades.push({
           id: `${entry.time}-${time}`,
@@ -141,7 +147,7 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
           exitTime: time,
           qty,
           pnl,
-          pnlTicks: priceDiff * 10000, // Convert to pips for forex
+          pnlTicks: isForex ? priceDiff * 10000 : priceDiff * 4, // Convert to pips for forex, ticks for futures
           notes: '',
           tags: [],
         });
