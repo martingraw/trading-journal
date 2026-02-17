@@ -104,8 +104,15 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
         const tickValue = getTickValue(symbol);
         const priceDiff = entry.price - price;
         
-        // Check if this is a forex pair (M6E, M6A, M6B, etc.) - prices are in decimal format like 1.1829
-        const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF');
+        // Check if this is a forex pair - prices are in decimal format like 1.1829 or 0.7044
+        // Micro forex: M6E, M6A, M6B, MCD, MJY, MSF
+        // Standard forex: 6A (DA6), 6E, 6B, 6C, 6J, 6N, 6S, E7, J7
+        const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF') ||
+                        symbol.startsWith('6A') || symbol.startsWith('6E') || symbol.startsWith('6B') || symbol.startsWith('6C') ||
+                        symbol.startsWith('6J') || symbol.startsWith('6N') || symbol.startsWith('6S') || symbol.startsWith('E7') || 
+                        symbol.startsWith('J7') || symbol.startsWith('DA6') || symbol.startsWith('EU6') || symbol.startsWith('BP6') ||
+                        symbol.startsWith('CA6') || symbol.startsWith('JY6') || symbol.startsWith('NE6') || symbol.startsWith('SF6') ||
+                        symbol.startsWith('EEU') || symbol.startsWith('EJY');
         const pnl = isForex ? priceDiff * tickValue * 10000 * qty : priceDiff * tickValue * qty;
 
         trades.push({
@@ -133,8 +140,15 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
         const tickValue = getTickValue(symbol);
         const priceDiff = price - entry.price;
         
-        // Check if this is a forex pair (M6E, M6A, M6B, etc.) - prices are in decimal format like 1.1829
-        const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF');
+        // Check if this is a forex pair - prices are in decimal format like 1.1829 or 0.7044
+        // Micro forex: M6E, M6A, M6B, MCD, MJY, MSF
+        // Standard forex: 6A (DA6), 6E, 6B, 6C, 6J, 6N, 6S, E7, J7
+        const isForex = symbol.startsWith('M6') || symbol.startsWith('MCD') || symbol.startsWith('MJY') || symbol.startsWith('MSF') ||
+                        symbol.startsWith('6A') || symbol.startsWith('6E') || symbol.startsWith('6B') || symbol.startsWith('6C') ||
+                        symbol.startsWith('6J') || symbol.startsWith('6N') || symbol.startsWith('6S') || symbol.startsWith('E7') || 
+                        symbol.startsWith('J7') || symbol.startsWith('DA6') || symbol.startsWith('EU6') || symbol.startsWith('BP6') ||
+                        symbol.startsWith('CA6') || symbol.startsWith('JY6') || symbol.startsWith('NE6') || symbol.startsWith('SF6') ||
+                        symbol.startsWith('EEU') || symbol.startsWith('EJY');
         const pnl = isForex ? priceDiff * tickValue * 10000 * qty : priceDiff * tickValue * qty;
 
         trades.push({
