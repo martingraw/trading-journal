@@ -113,7 +113,20 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
                         symbol.startsWith('J7') || symbol.startsWith('DA6') || symbol.startsWith('EU6') || symbol.startsWith('BP6') ||
                         symbol.startsWith('CA6') || symbol.startsWith('JY6') || symbol.startsWith('NE6') || symbol.startsWith('SF6') ||
                         symbol.startsWith('EEU') || symbol.startsWith('EJY');
-        const pnl = isForex ? priceDiff * tickValue * 10000 * qty : priceDiff * tickValue * qty;
+        
+        // For forex: priceDiff is in decimal (e.g., 0.0011), multiply by 10000 to get pips (11 pips)
+        // Then multiply by tick value per pip and quantity
+        const pnl = isForex ? priceDiff * 10000 * tickValue * qty : priceDiff * tickValue * qty;
+        
+        console.log('Trade calculation:', {
+          symbol,
+          isForex,
+          priceDiff,
+          tickValue,
+          qty,
+          pnl,
+          formula: isForex ? `${priceDiff} * 10000 * ${tickValue} * ${qty} = ${pnl}` : `${priceDiff} * ${tickValue} * ${qty} = ${pnl}`
+        });
 
         trades.push({
           id: `${entry.time}-${time}`,
@@ -149,7 +162,20 @@ export const processCSV = (csvData: any[], existingTrades: Trade[] = []): Trade[
                         symbol.startsWith('J7') || symbol.startsWith('DA6') || symbol.startsWith('EU6') || symbol.startsWith('BP6') ||
                         symbol.startsWith('CA6') || symbol.startsWith('JY6') || symbol.startsWith('NE6') || symbol.startsWith('SF6') ||
                         symbol.startsWith('EEU') || symbol.startsWith('EJY');
-        const pnl = isForex ? priceDiff * tickValue * 10000 * qty : priceDiff * tickValue * qty;
+        
+        // For forex: priceDiff is in decimal (e.g., 0.0011), multiply by 10000 to get pips (11 pips)
+        // Then multiply by tick value per pip and quantity
+        const pnl = isForex ? priceDiff * 10000 * tickValue * qty : priceDiff * tickValue * qty;
+        
+        console.log('Trade calculation:', {
+          symbol,
+          isForex,
+          priceDiff,
+          tickValue,
+          qty,
+          pnl,
+          formula: isForex ? `${priceDiff} * 10000 * ${tickValue} * ${qty} = ${pnl}` : `${priceDiff} * ${tickValue} * ${qty} = ${pnl}`
+        });
 
         trades.push({
           id: `${entry.time}-${time}`,
